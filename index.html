@@ -569,8 +569,9 @@ function aggregate(days) {
   const paidLeadsTotal = ga4['Meta Paid'] + ga4['Google Paid'] +
     (wantOtherPaid ? DATA.groups.paid.filter(g => !['Meta Paid', 'Google Paid'].includes(g)).reduce((s, g) => s + ga4[g], 0) : 0);
   const ownedLeadsTotal = wantOwned ? DATA.groups.owned.reduce((s, g) => s + ga4[g], 0) : 0;
-  const totalLeads = paidLeadsTotal + ownedLeadsTotal +
-    DATA.groups.organic.reduce((s, g) => s + ga4[g], 0) + (ga4['Tagging roto'] || 0) + (ga4['Otros'] || 0);
+  // Total = solo lo que esta en los chips de filtro (paid respetando plataforma + owned si esta activo).
+  // Organico, directo, tagging roto y otros quedan fuera del total (siguen en el Mix, no acumulan aca).
+  const totalLeads = paidLeadsTotal + ownedLeadsTotal;
 
   return {
     days: days.length, meta, googleAds, google, ga4,
@@ -585,6 +586,7 @@ function valueForDay(d, key) {
   const formatos = STATE.formatos;
   const wantMeta = STATE.platforms.has('meta');
   const wantGoogle = STATE.platforms.has('google');
+  const wantOtherPaid = STATE.platforms.has('other_paid');
   const wantOwned = STATE.platforms.has('owned');
   const m = wantMeta ? metaAgg(d, etapas, formatos) : { spend: 0, impressions: 0, reach: 0, clicks: 0, complete_reg: 0 };
   const metaLeadsGA4 = wantMeta ? (d.ga4['Meta Paid'] || 0) : 0;
@@ -594,6 +596,7 @@ function valueForDay(d, key) {
   const gImpr = gAds.clean_impr + gAds.dirty_impr;
   const gClicks = gAds.clean_clicks + gAds.dirty_clicks;
   const ownedLeads = wantOwned ? DATA.groups.owned.reduce((s, g) => s + (d.ga4[g] || 0), 0) : 0;
+  const otherPaidLeads = wantOtherPaid ? DATA.groups.paid.filter(g => !['Meta Paid', 'Google Paid'].includes(g)).reduce((s, g) => s + (d.ga4[g] || 0), 0) : 0;
 
   switch (key) {
     case 'meta_spend': return m.spend;
@@ -601,7 +604,7 @@ function valueForDay(d, key) {
     case 'meta_leads_ga4': return metaLeadsGA4;
     case 'google_leads_ga4': return googleLeadsGA4;
     case 'owned_leads': return ownedLeads;
-    case 'total_leads': return metaLeadsGA4 + googleLeadsGA4 + ownedLeads;
+    case 'total_leads': return metaLeadsGA4 + googleLeadsGA4 + otherPaidLeads + ownedLeads;
     case 'meta_cpl': return metaLeadsGA4 ? m.spend / metaLeadsGA4 : 0;
     case 'google_cpl': return googleLeadsGA4 ? gCost / googleLeadsGA4 : 0;
     case 'meta_ctr': return m.impressions ? m.clicks / m.impressions * 100 : 0;
