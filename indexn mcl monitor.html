@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Titanium McLaren · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF7; --surface: #FFFFFF; --surface-alt: #F4F3EE;
+    --ink: #14140F; --ink-2: #4A4A44; --ink-3: #8B8B82; --ink-4: #C2C2B8;
+    --border: #E8E6DF; --border-strong: #D5D3CB;
+    --diners-blue: #003D7A; --accent: #B8873B;
+    --up: #2E8B57; --down: #C0392B; --flat: #8B8B82;
+    --c-meta: #4A6FA5; --c-google: #C87850; --c-owned: #6B8E4E;
+    --c-total: #14140F; --c-other-paid: #B074D4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'DM Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size: 14px; line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { padding: 28px 36px 80px; max-width: 1500px; margin: 0 auto; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 18px; margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    gap: 24px; flex-wrap: wrap;
+  }
+  .topbar-left { display: flex; align-items: baseline; gap: 14px; }
+  .brand-title {
+    font-family: 'Anton', system-ui, sans-serif;
+    font-size: 26px; letter-spacing: 0.02em;
+    text-transform: uppercase; color: var(--ink);
+  }
+  .brand-sub { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+  .topbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .meta-strip { font-size: 11px; letter-spacing: 0.06em; color: var(--ink-3); }
+  .meta-strip strong { color: var(--ink-2); font-weight: 500; }
+  .btn {
+    font-family: inherit; font-size: 12px; letter-spacing: 0.06em;
+    padding: 8px 14px; border-radius: 4px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    color: var(--ink-2); font-weight: 500; transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--ink-3); color: var(--ink); }
+  .btn.primary { background: var(--diners-blue); color: white; border-color: var(--diners-blue); }
+  .btn.primary:hover { background: #002856; }
+  .filters {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 20px 24px; border-radius: 6px; margin-bottom: 24px;
+  }
+  .filters-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+  .presets { display: flex; gap: 4px; }
+  .preset-btn {
+    font-family: inherit; padding: 6px 12px; border-radius: 3px;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    font-size: 12px; color: var(--ink-2); cursor: pointer; font-weight: 500;
+  }
+  .preset-btn.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  input[type="date"] {
+    font-family: inherit; font-size: 13px; padding: 6px 10px;
+    border: 1px solid var(--border-strong); border-radius: 3px;
+    color: var(--ink); background: var(--surface);
+  }
+  .range-inputs { display: flex; gap: 6px; align-items: center; }
+  .range-inputs span { color: var(--ink-3); font-size: 12px; }
+  .chip-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    padding: 6px 12px; border-radius: 100px;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    font-size: 12px; color: var(--ink-2); cursor: pointer; font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chip.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .compare-toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
+  .compare-toggle input { accent-color: var(--diners-blue); }
+  .compare-range { display: none; gap: 6px; align-items: center; margin-top: 8px; }
+  .compare-range.visible { display: flex; }
+  section { margin-bottom: 32px; }
+  .section-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; font-weight: 500; }
+  .hero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .hero-tile {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 20px 22px; border-radius: 6px;
+    display: flex; flex-direction: column;
+    border-top: 3px solid var(--c-meta);
+  }
+  .hero-tile.google { border-top-color: var(--c-google); }
+  .hero-tile.owned { border-top-color: var(--c-owned); }
+  .hero-tile.total { border-top-color: var(--diners-blue); }
+  .tile-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; font-weight: 500; }
+  .tile-hero-value {
+    font-family: 'Anton', sans-serif;
+    font-size: 46px; line-height: 1; letter-spacing: 0.01em;
+    color: var(--ink); margin-bottom: 4px;
+  }
+  .tile-hero-value .prefix, .tile-hero-value .suffix {
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 20px; color: var(--ink-3);
+  }
+  .tile-hero-value .prefix { margin-right: 4px; }
+  .tile-hero-value .suffix { margin-left: 4px; }
+  .tile-context { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .tile-delta { font-size: 12px; margin-top: 6px; font-weight: 500; }
+  .tile-delta.up { color: var(--up); }
+  .tile-delta.down { color: var(--down); }
+  .tile-delta.flat { color: var(--flat); }
+  .tile-sparkline { margin-top: 12px; height: 36px; }
+  .tile-kpis { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .kpi-mini { font-size: 11px; }
+  .kpi-mini .k { color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; font-size: 9px; margin-bottom: 2px; }
+  .kpi-mini .v { color: var(--ink); font-weight: 600; font-size: 13px; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); padding: 18px 22px; border-radius: 6px; position: relative; }
+  .chart-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+  .chart-title { font-family: 'Anton', sans-serif; font-size: 18px; letter-spacing: 0.01em; color: var(--ink); }
+  .chart-subtitle { font-size: 11px; color: var(--ink-3); margin-bottom: 12px; letter-spacing: 0.02em; }
+  .chart-legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--ink-2); flex-wrap: wrap; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 3px; border-radius: 2px; }
+  .chart-container { position: relative; }
+  svg { display: block; width: 100%; overflow: visible; }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-label { fill: var(--ink-3); font-size: 10px; }
+  .curve { fill: none; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+  .curve-meta { stroke: var(--c-meta); }
+  .curve-google { stroke: var(--c-google); }
+  .curve-owned { stroke: var(--c-owned); }
+  .curve-total { stroke: var(--c-total); stroke-width: 2.5; }
+  .marker-line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.6; }
+  .marker-label { fill: var(--accent); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
+  .crosshair { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0; pointer-events: none; }
+  .crosshair.visible { opacity: 0.7; }
+  .cross-dot { pointer-events: none; opacity: 0; }
+  .cross-dot.visible { opacity: 1; }
+  .tooltip {
+    position: absolute; background: var(--ink); color: white;
+    padding: 10px 12px; border-radius: 4px; font-size: 12px;
+    pointer-events: none; opacity: 0; transition: opacity 0.1s;
+    white-space: nowrap; z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .tooltip.visible { opacity: 0.96; }
+  .tooltip .tt-date { font-weight: 600; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-4); }
+  .tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; padding: 2px 0; }
+  .tooltip .tt-label { display: flex; align-items: center; gap: 6px; }
+  .tooltip .tt-value { font-weight: 600; }
+  .tooltip .tt-dot { width: 8px; height: 2px; border-radius: 1px; }
+  .mix-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .mix-row:last-child { border-bottom: none; }
+  .mix-label { color: var(--ink); flex: 1; display: flex; align-items: center; gap: 8px; }
+  .mix-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .mix-bar-container { flex: 1.5; margin: 0 16px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .mix-bar { height: 100%; border-radius: 3px; }
+  .mix-num { color: var(--ink); font-weight: 600; min-width: 90px; text-align: right; font-size: 12px; }
+  .mix-num .pct { color: var(--ink-3); font-weight: 400; margin-left: 6px; }
+  .eff-table { width: 100%; border-collapse: collapse; }
+  .eff-table th, .eff-table td { padding: 10px 12px; text-align: right; }
+  .eff-table th:first-child, .eff-table td:first-child { text-align: left; }
+  .eff-table thead th { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; border-bottom: 1px solid var(--border); }
+  .eff-table tbody tr { border-bottom: 1px solid var(--border); }
+  .eff-table tbody tr:last-child { border-bottom: none; }
+  .eff-table .platform { color: var(--ink); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .eff-table .num { color: var(--ink); font-weight: 500; }
+  .eff-table .num-highlight { color: var(--ink); font-weight: 600; font-family: 'Anton', sans-serif; font-size: 16px; }
+  .plat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .delta.up { color: var(--up); }
+  .delta.down { color: var(--down); }
+  .delta.flat { color: var(--flat); }
+  .note-row { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--ink-3); padding: 12px 16px; border-radius: 4px; margin-bottom: 8px; }
+  .note-row.attention { border-left-color: var(--accent); }
+  .note-title { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .note-body { font-size: 12px; color: var(--ink-2); line-height: 1.55; }
+  .bit-item {
+    display: grid; grid-template-columns: 90px 1fr;
+    gap: 16px; padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bit-item:last-child { border-bottom: none; }
+  .bit-date {
+    font-family: 'Anton', sans-serif; font-size: 14px;
+    color: var(--ink); letter-spacing: 0.02em;
+  }
+  .bit-date .day-num { display: block; font-size: 26px; line-height: 1; margin-bottom: 2px; }
+  .bit-date .month { font-size: 10px; color: var(--ink-3); letter-spacing: 0.14em; text-transform: uppercase; }
+  .bit-body { display: flex; flex-direction: column; gap: 4px; }
+  .bit-type {
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: white; padding: 2px 8px; border-radius: 2px;
+    display: inline-block; font-weight: 600; width: fit-content;
+  }
+  .bit-type.hito { background: var(--diners-blue); }
+  .bit-type.decision { background: var(--accent); }
+  .bit-type.hallazgo { background: var(--ink-2); }
+  .bit-type.accion { background: var(--up); }
+  .bit-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .bit-desc { font-size: 12px; color: var(--ink-2); line-height: 1.55; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 200; padding: 20px; }
+  .modal-overlay.visible { display: flex; }
+  .modal { background: var(--surface); border-radius: 8px; padding: 28px; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-family: 'Anton', sans-serif; font-size: 22px; color: var(--ink); margin-bottom: 4px; }
+  .modal-subtitle { font-size: 12px; color: var(--ink-3); margin-bottom: 20px; }
+  .dropzone { border: 2px dashed var(--border-strong); border-radius: 6px; padding: 30px; text-align: center; margin-bottom: 12px; color: var(--ink-3); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .dropzone:hover, .dropzone.dragover { border-color: var(--diners-blue); background: var(--surface-alt); color: var(--ink-2); }
+  .dropzone strong { color: var(--ink); }
+  .upload-instructions { background: var(--surface-alt); padding: 14px 16px; border-radius: 4px; font-size: 12px; color: var(--ink-2); line-height: 1.6; margin-bottom: 12px; }
+  .upload-instructions strong { color: var(--ink); }
+  .upload-instructions code { background: white; padding: 1px 5px; border-radius: 2px; font-family: 'DM Sans', monospace; font-size: 11px; }
+  .upload-status { padding: 10px 14px; border-radius: 4px; font-size: 12px; margin-bottom: 8px; display: none; }
+  .upload-status.visible { display: block; }
+  .upload-status.success { background: rgba(46,139,87,0.1); color: var(--up); border: 1px solid var(--up); }
+  .upload-status.error { background: rgba(192,57,43,0.08); color: var(--down); border: 1px solid var(--down); }
+  .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; align-items: center; }
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; }
+  footer strong { color: var(--ink-2); font-weight: 500; }
+  footer code { background: var(--surface-alt); padding: 2px 6px; border-radius: 3px; font-family: 'DM Sans', monospace; }
+  @media (max-width: 1100px) {
+    body { padding: 20px 16px; }
+    .hero-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .tile-hero-value { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="brand-title">Titanium McLaren</span>
+    <span class="brand-sub">Dashboard diario de campaña</span>
+  </div>
+  <div class="topbar-right">
+    <div class="meta-strip">Ventana <strong id="ts-range">—</strong></div>
+    <button class="btn primary" id="btn-upload">Actualizar datos</button>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filters-row">
+    <div class="filter-group">
+      <div class="filter-label">Rango</div>
+      <div class="presets" id="presets"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Fechas</div>
+      <div class="range-inputs">
+        <input type="date" id="date-from"><span>→</span><input type="date" id="date-to">
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Plataformas</div>
+      <div class="chip-group" id="platform-chips"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Etapas</div>
+      <div class="chip-group" id="etapa-chips"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Formatos</div>
+      <div class="chip-group" id="formato-chips"></div>
+    </div>
+  </div>
+  <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+    <label class="compare-toggle">
+      <input type="checkbox" id="compare-custom-toggle">
+      Comparar contra un rango custom (en lugar del período previo automático)
+    </label>
+    <div class="compare-range" id="compare-range">
+      <span style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.1em;">Comparar vs:</span>
+      <input type="date" id="cmp-from"><span>→</span><input type="date" id="cmp-to">
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="section-label">Vista rápida · <span id="range-desc">rango seleccionado</span></div>
+  <div class="hero-grid" id="hero-tiles"></div>
+</section>
+
+<section>
+  <div class="section-label">Tendencia diaria</div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="chart-header"><span class="chart-title">Coste diario</span><span class="chart-subtitle">USD invertido por plataforma</span></div>
+      <div class="chart-legend" id="cost-legend"></div>
+      <div class="chart-container"><div id="chart-cost"></div><div class="tooltip" id="tt-cost"></div></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><span class="chart-title">Leads / día</span><span class="chart-subtitle">COMPLETE_MCLAREN por plataforma (GA4)</span></div>
+      <div class="chart-legend" id="leads-legend"></div>
+      <div class="chart-container"><div id="chart-leads"></div><div class="tooltip" id="tt-leads"></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="chart-header"><span class="chart-title">Costo por lead (CPL)</span><span class="chart-subtitle">Gasto ÷ leads GA4 · por día por plataforma</span></div>
+      <div class="chart-legend" id="cpl-legend"></div>
+      <div class="chart-container"><div id="chart-cpl"></div><div class="tooltip" id="tt-cpl"></div></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><span class="chart-title">CTR & Frecuencia Meta</span><span class="chart-subtitle">Solo Meta paid · CTR% y frecuencia diaria</span></div>
+      <div class="chart-legend" id="ctrfreq-legend"></div>
+      <div class="chart-container"><div id="chart-ctr-freq"></div><div class="tooltip" id="tt-ctrfreq"></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">Eficiencia · <span id="range-desc-2">rango</span> · delta vs. comparación</div>
+  <div class="chart-card">
+    <table class="eff-table" id="eff-table">
+      <thead>
+        <tr>
+          <th>Plataforma</th><th>Gasto</th><th>Impresiones</th><th>Clicks</th>
+          <th>Leads GA4</th><th>CPM</th><th>CPC</th><th>CTR</th><th>CVR</th><th>CPL</th><th>Freq</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="chart-header"><span class="chart-title">Mix por fuente</span><span class="chart-subtitle">% del total de leads COMPLETE_MCLAREN en el rango</span></div>
+      <div id="mix-list"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><span class="chart-title">Bitácora · qué se ha hecho</span><span class="chart-subtitle">Timeline de decisiones y ajustes de la campaña</span></div>
+      <div id="bitacora-list"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">Lectura del rango · qué mirar</div>
+  <div id="notes-list"></div>
+</section>
+
+<footer>
+  <strong>Titanium McLaren</strong> · Dashboard diario · fuentes: Meta Ads · Google Ads · GA4 · Última actualización Meta: <strong id="ts-meta-snap">—</strong>
+</footer>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Actualizar datasets</div>
+    <div class="modal-subtitle">Arrastra los CSVs de hoy. El dash se re-procesa en el browser y guarda tu update localmente. Para que se refleje en la URL pública, descarga el HTML actualizado y súbelo al hosting.</div>
+    <div class="upload-instructions">
+      <strong>1. GA4 · COMPLETE_MCLAREN por día × fuente</strong><br>
+      Explore de forma libre. Dimensiones: Fecha · Fuente/medio · Nombre del evento (filtro <code>COMPLETE_MCLAREN</code>) · Landing (filtro contiene <code>confirmacion-solicitud-titanium-mastercard-mclaren</code>). Métricas: Sesiones · Usuarios activos · Eventos clave. Rango: 2026-07-01 → hoy. Filas: 1000.
+    </div>
+    <div class="upload-instructions">
+      <strong>2. Google Ads · reporte diario por audiencia</strong><br>
+      Report editor: Día × Campaña × Grupo × <strong>Segmento de audiencia</strong>. Métricas: Impr., Coste, Clics. Filtro: campañas McLaren. Rango: desde <code>2026-08-20</code> hasta hoy.
+    </div>
+    <div class="dropzone" id="dropzone-ga4">
+      <strong>📊 GA4 COMPLETE_MCLAREN</strong><br>
+      <span style="font-size:11px">Arrastra aquí, o click para seleccionar</span>
+      <input type="file" accept=".csv" style="display:none" id="file-ga4">
+    </div>
+    <div class="dropzone" id="dropzone-google">
+      <strong>🎯 Google Ads</strong><br>
+      <span style="font-size:11px">Arrastra aquí, o click para seleccionar</span>
+      <input type="file" accept=".csv" style="display:none" id="file-google">
+    </div>
+    <div class="upload-status" id="upload-status"></div>
+    <div class="upload-instructions" style="background: rgba(184,135,59,0.08); border-left: 3px solid var(--accent);">
+      <strong>Meta:</strong> viene automatizado vía MCP oficial. Snapshot actual: <strong id="ts-meta-snap-modal">—</strong>. Para refrescar Meta, pídeselo a Claude en el chat.
+    </div>
+    <div class="modal-actions">
+      <button class="btn primary" id="btn-download">↓ Descargar HTML actualizado</button>
+      <button class="btn" id="btn-cancel">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"generated_at": "2026-09-07", "meta_snapshot_date": "2026-09-07", "date_min": "2026-07-17", "date_max": "2026-09-07", "days_count": 53, "groups": {"paid": ["Meta Paid", "Google Paid", "YouTube Paid", "DV360 Paid", "TikTok Paid", "Primicias Paid"], "owned": ["Salesforce", "WhatsApp", "App Diners", "Email otros"], "organic": ["Google Organic", "Instagram Organic", "Directo"], "all": ["Meta Paid", "Google Paid", "YouTube Paid", "DV360 Paid", "TikTok Paid", "Primicias Paid", "Salesforce", "WhatsApp", "App Diners", "Email otros", "Google Organic", "Instagram Organic", "Directo", "Tagging roto", "Otros"]}, "etapas": ["Awareness", "Consideración", "Experiencia"], "formatos": ["Estáticos", "Video", "Dinámicos", "Otros"], "google_ads_etapa": "Consideración", "google_ads_formato": "Video", "daily": [{"date": "2026-07-17", "ga4": {"Meta Paid": 3, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 5, "App Diners": 3, "Email otros": 2, "Google Organic": 6, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 4}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-18", "ga4": {"Meta Paid": 3, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 1, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 5, "Email otros": 3, "Google Organic": 9, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 4}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-19", "ga4": {"Meta Paid": 0, "Google Paid": 3, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 1, "App Diners": 4, "Email otros": 2, "Google Organic": 5, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 0}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-20", "ga4": {"Meta Paid": 7, "Google Paid": 6, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 3, "WhatsApp": 0, "App Diners": 3, "Email otros": 5, "Google Organic": 5, "Instagram Organic": 0, "Directo": 7, "Tagging roto": 1, "Otros": 6}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-21", "ga4": {"Meta Paid": 2, "Google Paid": 3, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 5, "Email otros": 2, "Google Organic": 8, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-22", "ga4": {"Meta Paid": 3, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 6, "WhatsApp": 4, "App Diners": 2, "Email otros": 0, "Google Organic": 5, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-23", "ga4": {"Meta Paid": 1, "Google Paid": 0, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 6, "WhatsApp": 1, "App Diners": 0, "Email otros": 3, "Google Organic": 3, "Instagram Organic": 0, "Directo": 3, "Tagging roto": 0, "Otros": 0}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-24", "ga4": {"Meta Paid": 1, "Google Paid": 3, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 2, "App Diners": 4, "Email otros": 1, "Google Organic": 4, "Instagram Organic": 0, "Directo": 2, "Tagging roto": 0, "Otros": 6}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-25", "ga4": {"Meta Paid": 1, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 2, "WhatsApp": 0, "App Diners": 2, "Email otros": 1, "Google Organic": 3, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-26", "ga4": {"Meta Paid": 3, "Google Paid": 0, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 0, "App Diners": 1, "Email otros": 0, "Google Organic": 2, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-27", "ga4": {"Meta Paid": 2, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 2, "WhatsApp": 0, "App Diners": 1, "Email otros": 2, "Google Organic": 4, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 0}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-28", "ga4": {"Meta Paid": 2, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 2, "WhatsApp": 0, "App Diners": 2, "Email otros": 1, "Google Organic": 10, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 8}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-29", "ga4": {"Meta Paid": 3, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 2, "WhatsApp": 0, "App Diners": 0, "Email otros": 0, "Google Organic": 4, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-30", "ga4": {"Meta Paid": 1, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 1, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 3, "WhatsApp": 0, "App Diners": 3, "Email otros": 3, "Google Organic": 3, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 3}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-07-31", "ga4": {"Meta Paid": 2, "Google Paid": 0, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 1, "App Diners": 1, "Email otros": 0, "Google Organic": 8, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-01", "ga4": {"Meta Paid": 0, "Google Paid": 4, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 2, "Email otros": 0, "Google Organic": 1, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 1}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-02", "ga4": {"Meta Paid": 3, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 1, "App Diners": 4, "Email otros": 2, "Google Organic": 4, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-03", "ga4": {"Meta Paid": 0, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 0, "App Diners": 4, "Email otros": 0, "Google Organic": 6, "Instagram Organic": 0, "Directo": 5, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-04", "ga4": {"Meta Paid": 16, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 5, "Email otros": 0, "Google Organic": 10, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 3}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-05", "ga4": {"Meta Paid": 15, "Google Paid": 4, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 9, "WhatsApp": 0, "App Diners": 2, "Email otros": 1, "Google Organic": 9, "Instagram Organic": 0, "Directo": 2, "Tagging roto": 0, "Otros": 3}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-06", "ga4": {"Meta Paid": 11, "Google Paid": 3, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 2, "WhatsApp": 0, "App Diners": 4, "Email otros": 4, "Google Organic": 5, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 4}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-07", "ga4": {"Meta Paid": 6, "Google Paid": 0, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 1, "Email otros": 1, "Google Organic": 1, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 0}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-08", "ga4": {"Meta Paid": 5, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 0, "App Diners": 0, "Email otros": 0, "Google Organic": 4, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 0}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-09", "ga4": {"Meta Paid": 5, "Google Paid": 3, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 4, "Email otros": 1, "Google Organic": 2, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 1}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-10", "ga4": {"Meta Paid": 5, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 1, "Email otros": 0, "Google Organic": 1, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 1, "Otros": 1}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-11", "ga4": {"Meta Paid": 4, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 1, "WhatsApp": 0, "App Diners": 3, "Email otros": 2, "Google Organic": 8, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 4}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-12", "ga4": {"Meta Paid": 2, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 4, "WhatsApp": 0, "App Diners": 2, "Email otros": 1, "Google Organic": 5, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-13", "ga4": {"Meta Paid": 2, "Google Paid": 1, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 4, "WhatsApp": 0, "App Diners": 3, "Email otros": 0, "Google Organic": 8, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-14", "ga4": {"Meta Paid": 2, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 2, "WhatsApp": 0, "App Diners": 1, "Email otros": 1, "Google Organic": 5, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 0}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-15", "ga4": {"Meta Paid": 2, "Google Paid": 2, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 0, "WhatsApp": 0, "App Diners": 1, "Email otros": 0, "Google Organic": 2, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-16", "ga4": {"Meta Paid": 1, "Google Paid": 5, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 3, "WhatsApp": 0, "App Diners": 2, "Email otros": 1, "Google Organic": 3, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-17", "ga4": {"Meta Paid": 0, "Google Paid": 10, "YouTube Paid": 0, "DV360 Paid": 1, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 5, "WhatsApp": 43, "App Diners": 2, "Email otros": 1, "Google Organic": 12, "Instagram Organic": 0, "Directo": 1, "Tagging roto": 0, "Otros": 7}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-18", "ga4": {"Meta Paid": 1, "Google Paid": 30, "YouTube Paid": 0, "DV360 Paid": 1, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 305, "WhatsApp": 20, "App Diners": 31, "Email otros": 81, "Google Organic": 45, "Instagram Organic": 0, "Directo": 4, "Tagging roto": 0, "Otros": 25}, "meta": {}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-19", "ga4": {"Meta Paid": 3, "Google Paid": 20, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 104, "WhatsApp": 112, "App Diners": 44, "Email otros": 22, "Google Organic": 33, "Instagram Organic": 0, "Directo": 2, "Tagging roto": 0, "Otros": 18}, "meta": {"Awareness": {"Otros": {"spend": 5.52, "impressions": 3026, "reach": 2287, "clicks": 44, "complete_reg": 6}}}, "google_ads": {"clean_cost": 0.0, "dirty_cost": 0, "clean_impr": 0, "dirty_impr": 0, "clean_clicks": 0, "dirty_clicks": 0}}, {"date": "2026-08-20", "ga4": {"Meta Paid": 163, "Google Paid": 9, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 25, "WhatsApp": 17, "App Diners": 26, "Email otros": 7, "Google Organic": 14, "Instagram Organic": 0, "Directo": 2, "Tagging roto": 0, "Otros": 11}, "meta": {"Awareness": {"Otros": {"spend": 10.52, "impressions": 5212, "reach": 3305, "clicks": 63, "complete_reg": 1}}, "Consideración": {"Estáticos": {"spend": 189.73, "impressions": 41162, "reach": 15282, "clicks": 560, "complete_reg": 2}}}, "google_ads": {"clean_cost": 30.72, "dirty_cost": 0, "clean_impr": 7258, "dirty_impr": 0, "clean_clicks": 113, "dirty_clicks": 0}}, {"date": "2026-08-21", "ga4": {"Meta Paid": 74, "Google Paid": 18, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 12, "WhatsApp": 31, "App Diners": 24, "Email otros": 5, "Google Organic": 16, "Instagram Organic": 2, "Directo": 2, "Tagging roto": 0, "Otros": 6}, "meta": {"Awareness": {"Otros": {"spend": 8.08, "impressions": 4143, "reach": 2722, "clicks": 49, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 183.98, "impressions": 62743, "reach": 22079, "clicks": 571, "complete_reg": 3}}}, "google_ads": {"clean_cost": 51.94, "dirty_cost": 0, "clean_impr": 17422, "dirty_impr": 0, "clean_clicks": 368, "dirty_clicks": 0}}, {"date": "2026-08-22", "ga4": {"Meta Paid": 62, "Google Paid": 19, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 17, "WhatsApp": 2, "App Diners": 17, "Email otros": 3, "Google Organic": 17, "Instagram Organic": 1, "Directo": 1, "Tagging roto": 0, "Otros": 5}, "meta": {"Awareness": {"Otros": {"spend": 8.21, "impressions": 3805, "reach": 2740, "clicks": 41, "complete_reg": 1}}, "Consideración": {"Estáticos": {"spend": 207.37, "impressions": 78790, "reach": 24510, "clicks": 707, "complete_reg": 0}}}, "google_ads": {"clean_cost": 47.92, "dirty_cost": 0, "clean_impr": 37155, "dirty_impr": 0, "clean_clicks": 1750, "dirty_clicks": 0}}, {"date": "2026-08-23", "ga4": {"Meta Paid": 61, "Google Paid": 61, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 19, "WhatsApp": 5, "App Diners": 35, "Email otros": 18, "Google Organic": 21, "Instagram Organic": 2, "Directo": 1, "Tagging roto": 0, "Otros": 5}, "meta": {"Awareness": {"Otros": {"spend": 9.2, "impressions": 4561, "reach": 3180, "clicks": 46, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 214.03, "impressions": 80895, "reach": 25215, "clicks": 698, "complete_reg": 1}}}, "google_ads": {"clean_cost": 52.660000000000004, "dirty_cost": 0, "clean_impr": 12602, "dirty_impr": 0, "clean_clicks": 730, "dirty_clicks": 0}}, {"date": "2026-08-24", "ga4": {"Meta Paid": 47, "Google Paid": 60, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 23, "WhatsApp": 2, "App Diners": 21, "Email otros": 11, "Google Organic": 22, "Instagram Organic": 2, "Directo": 2, "Tagging roto": 0, "Otros": 16}, "meta": {"Awareness": {"Otros": {"spend": 8.95, "impressions": 4521, "reach": 3210, "clicks": 56, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 236.88, "impressions": 97514, "reach": 27185, "clicks": 740, "complete_reg": 0}}}, "google_ads": {"clean_cost": 52.379999999999995, "dirty_cost": 0, "clean_impr": 14055, "dirty_impr": 0, "clean_clicks": 753, "dirty_clicks": 0}}, {"date": "2026-08-25", "ga4": {"Meta Paid": 33, "Google Paid": 71, "YouTube Paid": 0, "DV360 Paid": 1, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 20, "WhatsApp": 1, "App Diners": 25, "Email otros": 10, "Google Organic": 30, "Instagram Organic": 1, "Directo": 0, "Tagging roto": 0, "Otros": 11}, "meta": {"Awareness": {"Otros": {"spend": 8.37, "impressions": 4624, "reach": 3217, "clicks": 63, "complete_reg": 3}}, "Consideración": {"Estáticos": {"spend": 248.75, "impressions": 103442, "reach": 29224, "clicks": 702, "complete_reg": 5}}}, "google_ads": {"clean_cost": 52.129999999999995, "dirty_cost": 0, "clean_impr": 14201, "dirty_impr": 0, "clean_clicks": 302, "dirty_clicks": 0}}, {"date": "2026-08-26", "ga4": {"Meta Paid": 48, "Google Paid": 66, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 103, "WhatsApp": 4, "App Diners": 24, "Email otros": 19, "Google Organic": 25, "Instagram Organic": 3, "Directo": 2, "Tagging roto": 0, "Otros": 23}, "meta": {"Awareness": {"Otros": {"spend": 7.52, "impressions": 3716, "reach": 2731, "clicks": 58, "complete_reg": 1}}, "Consideración": {"Estáticos": {"spend": 216.19, "impressions": 93067, "reach": 28036, "clicks": 591, "complete_reg": 3}, "Video": {"spend": 155.32, "impressions": 55499, "reach": 21434, "clicks": 605, "complete_reg": 0}}}, "google_ads": {"clean_cost": 47.85, "dirty_cost": 0, "clean_impr": 14224, "dirty_impr": 0, "clean_clicks": 223, "dirty_clicks": 0}}, {"date": "2026-08-27", "ga4": {"Meta Paid": 38, "Google Paid": 102, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 95, "WhatsApp": 7, "App Diners": 27, "Email otros": 19, "Google Organic": 39, "Instagram Organic": 11, "Directo": 1, "Tagging roto": 0, "Otros": 19}, "meta": {"Awareness": {"Otros": {"spend": 7.31, "impressions": 3426, "reach": 2601, "clicks": 50, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 251.08, "impressions": 95507, "reach": 28760, "clicks": 645, "complete_reg": 2}, "Video": {"spend": 245.57, "impressions": 85960, "reach": 27266, "clicks": 777, "complete_reg": 5}}}, "google_ads": {"clean_cost": 52.7, "dirty_cost": 0, "clean_impr": 16303, "dirty_impr": 0, "clean_clicks": 510, "dirty_clicks": 0}}, {"date": "2026-08-28", "ga4": {"Meta Paid": 14, "Google Paid": 76, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 27, "WhatsApp": 2, "App Diners": 23, "Email otros": 6, "Google Organic": 14, "Instagram Organic": 13, "Directo": 0, "Tagging roto": 0, "Otros": 5}, "meta": {"Awareness": {"Otros": {"spend": 7.64, "impressions": 3328, "reach": 2385, "clicks": 40, "complete_reg": 1}}, "Consideración": {"Estáticos": {"spend": 223.73, "impressions": 86943, "reach": 25153, "clicks": 623, "complete_reg": 1}, "Video": {"spend": 178.23, "impressions": 76926, "reach": 23095, "clicks": 818, "complete_reg": 4}}}, "google_ads": {"clean_cost": 51.76, "dirty_cost": 0, "clean_impr": 16139, "dirty_impr": 0, "clean_clicks": 396, "dirty_clicks": 0}}, {"date": "2026-08-29", "ga4": {"Meta Paid": 16, "Google Paid": 37, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 10, "WhatsApp": 0, "App Diners": 13, "Email otros": 1, "Google Organic": 9, "Instagram Organic": 19, "Directo": 0, "Tagging roto": 0, "Otros": 8}, "meta": {"Awareness": {"Otros": {"spend": 8.69, "impressions": 3659, "reach": 2613, "clicks": 34, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 239.99, "impressions": 88591, "reach": 26655, "clicks": 669, "complete_reg": 0}, "Video": {"spend": 213.04, "impressions": 92279, "reach": 27404, "clicks": 947, "complete_reg": 0}}}, "google_ads": {"clean_cost": 52.51, "dirty_cost": 0, "clean_impr": 15213, "dirty_impr": 0, "clean_clicks": 388, "dirty_clicks": 0}}, {"date": "2026-08-30", "ga4": {"Meta Paid": 12, "Google Paid": 43, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 9, "WhatsApp": 0, "App Diners": 13, "Email otros": 3, "Google Organic": 3, "Instagram Organic": 8, "Directo": 0, "Tagging roto": 0, "Otros": 2}, "meta": {"Awareness": {"Otros": {"spend": 9.7, "impressions": 4121, "reach": 2934, "clicks": 43, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 206.31, "impressions": 80988, "reach": 25190, "clicks": 622, "complete_reg": 0}, "Video": {"spend": 192.53, "impressions": 91198, "reach": 28309, "clicks": 914, "complete_reg": 0}}}, "google_ads": {"clean_cost": 52.459999999999994, "dirty_cost": 0, "clean_impr": 13522, "dirty_impr": 0, "clean_clicks": 849, "dirty_clicks": 0}}, {"date": "2026-08-31", "ga4": {"Meta Paid": 13, "Google Paid": 95, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 80, "WhatsApp": 2, "App Diners": 29, "Email otros": 19, "Google Organic": 25, "Instagram Organic": 3, "Directo": 7, "Tagging roto": 0, "Otros": 12}, "meta": {"Awareness": {"Otros": {"spend": 9.37, "impressions": 4236, "reach": 2962, "clicks": 47, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 242.98, "impressions": 91479, "reach": 26128, "clicks": 653, "complete_reg": 0}, "Video": {"spend": 226.66, "impressions": 95314, "reach": 28950, "clicks": 964, "complete_reg": 0}}}, "google_ads": {"clean_cost": 51.76, "dirty_cost": 0, "clean_impr": 22097, "dirty_impr": 0, "clean_clicks": 772, "dirty_clicks": 0}}, {"date": "2026-09-01", "ga4": {"Meta Paid": 12, "Google Paid": 76, "YouTube Paid": 1, "DV360 Paid": 1, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 56, "WhatsApp": 4, "App Diners": 22, "Email otros": 29, "Google Organic": 35, "Instagram Organic": 4, "Directo": 3, "Tagging roto": 0, "Otros": 13}, "meta": {"Awareness": {"Otros": {"spend": 9.49, "impressions": 4974, "reach": 3423, "clicks": 61, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 227.25, "impressions": 91838, "reach": 26463, "clicks": 641, "complete_reg": 2}, "Video": {"spend": 209.26, "impressions": 92366, "reach": 27503, "clicks": 928, "complete_reg": 0}}}, "google_ads": {"clean_cost": 51.949999999999996, "dirty_cost": 0, "clean_impr": 20370, "dirty_impr": 0, "clean_clicks": 1141, "dirty_clicks": 0}}, {"date": "2026-09-02", "ga4": {"Meta Paid": 10, "Google Paid": 58, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 22, "WhatsApp": 2, "App Diners": 38, "Email otros": 31, "Google Organic": 27, "Instagram Organic": 5, "Directo": 1, "Tagging roto": 0, "Otros": 11}, "meta": {"Awareness": {"Otros": {"spend": 7.87, "impressions": 4264, "reach": 2913, "clicks": 45, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 224.24, "impressions": 94497, "reach": 26106, "clicks": 603, "complete_reg": 3}, "Video": {"spend": 208.47, "impressions": 91137, "reach": 28419, "clicks": 905, "complete_reg": 3}}}, "google_ads": {"clean_cost": 51.67, "dirty_cost": 0, "clean_impr": 17496, "dirty_impr": 0, "clean_clicks": 1021, "dirty_clicks": 0}}, {"date": "2026-09-03", "ga4": {"Meta Paid": 11, "Google Paid": 89, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 23, "WhatsApp": 1, "App Diners": 30, "Email otros": 18, "Google Organic": 26, "Instagram Organic": 5, "Directo": 1, "Tagging roto": 0, "Otros": 13}, "meta": {"Awareness": {"Otros": {"spend": 7.32, "impressions": 3941, "reach": 2879, "clicks": 47, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 240.3, "impressions": 96326, "reach": 26123, "clicks": 654, "complete_reg": 3}, "Video": {"spend": 223.92, "impressions": 94323, "reach": 28864, "clicks": 978, "complete_reg": 9}}}, "google_ads": {"clean_cost": 51.870000000000005, "dirty_cost": 0, "clean_impr": 21696, "dirty_impr": 0, "clean_clicks": 705, "dirty_clicks": 0}}, {"date": "2026-09-04", "ga4": {"Meta Paid": 11, "Google Paid": 54, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 13, "WhatsApp": 0, "App Diners": 24, "Email otros": 3, "Google Organic": 17, "Instagram Organic": 2, "Directo": 0, "Tagging roto": 0, "Otros": 18}, "meta": {"Awareness": {"Otros": {"spend": 6.49, "impressions": 3232, "reach": 2426, "clicks": 32, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 223.25, "impressions": 84772, "reach": 24263, "clicks": 561, "complete_reg": 2}, "Video": {"spend": 206.26, "impressions": 85536, "reach": 28515, "clicks": 881, "complete_reg": 1}}, "Experiencia": {"Dinámicos": {"spend": 30.95, "impressions": 32081, "reach": 12918, "clicks": 74, "complete_reg": 0}, "Otros": {"spend": 15.09, "impressions": 8294, "reach": 4970, "clicks": 61, "complete_reg": 1}, "Video": {"spend": 38.55, "impressions": 11779, "reach": 7449, "clicks": 118, "complete_reg": 0}}}, "google_ads": {"clean_cost": 48.050000000000004, "dirty_cost": 0, "clean_impr": 24528, "dirty_impr": 0, "clean_clicks": 834, "dirty_clicks": 0}}, {"date": "2026-09-05", "ga4": {"Meta Paid": 17, "Google Paid": 24, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 3, "WhatsApp": 0, "App Diners": 19, "Email otros": 1, "Google Organic": 5, "Instagram Organic": 3, "Directo": 1, "Tagging roto": 0, "Otros": 2}, "meta": {"Awareness": {"Otros": {"spend": 8.08, "impressions": 3834, "reach": 2846, "clicks": 52, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 74.15, "impressions": 10209, "reach": 7436, "clicks": 83, "complete_reg": 1}, "Video": {"spend": 22.69, "impressions": 5210, "reach": 3338, "clicks": 61, "complete_reg": 1}}, "Experiencia": {"Dinámicos": {"spend": 85.73, "impressions": 88706, "reach": 22122, "clicks": 214, "complete_reg": 2}, "Otros": {"spend": 44.65, "impressions": 25632, "reach": 10883, "clicks": 240, "complete_reg": 0}, "Video": {"spend": 113.03, "impressions": 27801, "reach": 10800, "clicks": 397, "complete_reg": 0}}}, "google_ads": {"clean_cost": 47.28, "dirty_cost": 0, "clean_impr": 13681, "dirty_impr": 0, "clean_clicks": 329, "dirty_clicks": 0}}, {"date": "2026-09-06", "ga4": {"Meta Paid": 22, "Google Paid": 30, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 4, "WhatsApp": 1, "App Diners": 12, "Email otros": 3, "Google Organic": 13, "Instagram Organic": 0, "Directo": 0, "Tagging roto": 0, "Otros": 7}, "meta": {"Awareness": {"Otros": {"spend": 9.69, "impressions": 4360, "reach": 3218, "clicks": 67, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 45.99, "impressions": 7829, "reach": 5058, "clicks": 55, "complete_reg": 1}, "Video": {"spend": 63.58, "impressions": 16069, "reach": 8408, "clicks": 137, "complete_reg": 0}}, "Experiencia": {"Dinámicos": {"spend": 75.91, "impressions": 83845, "reach": 21479, "clicks": 188, "complete_reg": 0}, "Otros": {"spend": 35.15, "impressions": 20314, "reach": 8875, "clicks": 216, "complete_reg": 0}, "Video": {"spend": 93.59, "impressions": 23926, "reach": 7704, "clicks": 321, "complete_reg": 0}}}, "google_ads": {"clean_cost": 52.47, "dirty_cost": 0, "clean_impr": 14305, "dirty_impr": 0, "clean_clicks": 788, "dirty_clicks": 0}}, {"date": "2026-09-07", "ga4": {"Meta Paid": 7, "Google Paid": 45, "YouTube Paid": 0, "DV360 Paid": 0, "TikTok Paid": 0, "Primicias Paid": 0, "Salesforce": 12, "WhatsApp": 3, "App Diners": 13, "Email otros": 8, "Google Organic": 8, "Instagram Organic": 0, "Directo": 17, "Tagging roto": 0, "Otros": 4}, "meta": {"Awareness": {"Otros": {"spend": 4.52, "impressions": 2056, "reach": 1702, "clicks": 21, "complete_reg": 0}}, "Consideración": {"Estáticos": {"spend": 50.74, "impressions": 8623, "reach": 5749, "clicks": 44, "complete_reg": 0}, "Video": {"spend": 17.17, "impressions": 3422, "reach": 2115, "clicks": 30, "complete_reg": 0}}, "Experiencia": {"Dinámicos": {"spend": 55.1, "impressions": 59318, "reach": 19157, "clicks": 151, "complete_reg": 0}, "Otros": {"spend": 30.08, "impressions": 16655, "reach": 7510, "clicks": 202, "complete_reg": 0}, "Video": {"spend": 50.89, "impressions": 13430, "reach": 5954, "clicks": 196, "complete_reg": 0}}}, "google_ads": {"clean_cost": 40.279999999999994, "dirty_cost": 0, "clean_impr": 15516, "dirty_impr": 0, "clean_clicks": 275, "dirty_clicks": 0}}], "bitacora": [{"date": "2026-08-20", "type": "hito", "title": "Lanzamiento de campaña Titanium McLaren", "body": "Campaña iniciada con estructura de 3 etapas (Awareness · Consideración · Experiencia) sobre base cerrada de socios Titanium Mastercard."}, {"date": "2026-08-21", "type": "hallazgo", "title": "Detectada expansión de segmentación en Google", "body": "Google aplicó automáticamente su función de expansión de segmentación en el grupo Demand Gen. Se identificó como parte del monitoreo diario."}, {"date": "2026-09-04", "type": "accion", "title": "Ajustes de segmentación Google + optimización Meta", "body": "Se desactivaron las recomendaciones automáticas de expansión de segmentación en Google (nivel grupo y nivel cuenta). Se evaluó performance Meta consideración con frecuencia alta sobre base cerrada."}, {"date": "2026-09-07", "type": "hallazgo", "title": "Análisis 3d post-corrección", "body": "Se confirmó que la optimización aplicada requiere refuerzo continuo por el tamaño de la base cerrada. Se pasa a Marco B (monitoreo diario + reajustes de budget con visibilidad al cliente)."}, {"date": "2026-09-07", "type": "decision", "title": "Reasignación etapa Consideración", "body": "Se reasigna Consideración: Meta $7.109 (30%) · Google $16.033 (69%). Meta se enfoca solo en base socios con línea video ad + story. Google se divide en dos líneas Demand Gen con presupuesto diario para modular fines de semana."}, {"date": "2026-09-07", "type": "accion", "title": "Ejecución operativa de la reasignación", "body": "Meta: nueva línea Video Ad & Story activa con $3.000 sobre base socios (presupuesto diario $100). Línea Estáticos pausada tras consumir $4.019. Google: dos líneas Demand Gen — estáticos $2.462 + video $13.570 con presupuestos diarios para modular fines de semana."}, {"date": "2026-09-07", "type": "accion", "title": "Habilitado dashboard de monitoreo diario", "body": "Dashboard con KPIs de eficiencia (CPM · CPC · CTR · CVR · CPL · Freq), curvas interactivas y filtros por rango, plataforma, etapa y formato. Actualización diaria con data de GA4 · Google Ads · Meta."}]};
+document.getElementById('ts-range').textContent = `${DATA.date_min} → ${DATA.date_max}`;
+document.getElementById('ts-meta-snap').textContent = DATA.meta_snapshot_date;
+document.getElementById('ts-meta-snap-modal').textContent = DATA.meta_snapshot_date;
+
+const overrides = JSON.parse(localStorage.getItem('mcl_overrides') || '{}');
+const STATE = {
+  from: null, to: null,
+  compareCustom: false, cmpFrom: null, cmpTo: null,
+  platforms: new Set(['meta', 'google', 'other_paid', 'owned']),
+  etapas: new Set(['Awareness', 'Consideración', 'Experiencia']),
+  formatos: new Set(DATA.formatos || ['Estáticos', 'Video', 'Dinámicos', 'Otros']),
+};
+
+const PRESETS = [
+  { key: '7d', label: '7d', days: 7 },
+  { key: '14d', label: '14d', days: 14 },
+  { key: '28d', label: '28d', days: 28 },
+  { key: 'all', label: 'Campaña', days: null },
+  { key: 'custom', label: 'Custom', days: null },
+];
+
+function daysAgo(iso, n) {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+STATE.to = DATA.date_max;
+STATE.from = daysAgo(DATA.date_max, 13);
+
+const $ = (s) => document.querySelector(s);
+const fmt = (n, dec = 0) => (n === null || n === undefined || isNaN(n)) ? '—' :
+  Number(n).toLocaleString('es-EC', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const pct = (n) => (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
+function delta(cur, ref) {
+  if (!ref) return { cls: 'flat', txt: '—' };
+  const d = ((cur - ref) / ref) * 100;
+  return { cls: Math.abs(d) < 3 ? 'flat' : (d > 0 ? 'up' : 'down'), txt: pct(d) };
+}
+function deltaInv(cur, ref) {
+  if (!ref) return { cls: 'flat', txt: '—' };
+  const d = ((cur - ref) / ref) * 100;
+  return { cls: Math.abs(d) < 3 ? 'flat' : (d < 0 ? 'up' : 'down'), txt: pct(d) };
+}
+const shortDate = (iso) => iso.slice(5);
+function dailyInRange(from, to) { return DATA.daily.filter(d => d.date >= from && d.date <= to); }
+
+// Meta helper: iterar por etapa × formato con filtros
+function metaAgg(d, etapasSet, formatosSet) {
+  let acc = { spend: 0, impressions: 0, reach: 0, clicks: 0, complete_reg: 0 };
+  if (!d.meta) return acc;
+  for (const etapa of Object.keys(d.meta)) {
+    if (!etapasSet.has(etapa)) continue;
+    const byFmt = d.meta[etapa];
+    for (const fmt of Object.keys(byFmt)) {
+      if (!formatosSet.has(fmt)) continue;
+      const m = byFmt[fmt];
+      acc.spend += m.spend || 0;
+      acc.impressions += m.impressions || 0;
+      acc.reach += m.reach || 0;
+      acc.clicks += m.clicks || 0;
+      acc.complete_reg += m.complete_reg || 0;
+    }
+  }
+  return acc;
+}
+
+function aggregate(days) {
+  const etapas = STATE.etapas;
+  const formatos = STATE.formatos;
+  const wantMeta = STATE.platforms.has('meta');
+  const wantGoogle = STATE.platforms.has('google');
+  const wantOtherPaid = STATE.platforms.has('other_paid');
+  const wantOwned = STATE.platforms.has('owned');
+
+  let meta = { spend: 0, impressions: 0, reach: 0, clicks: 0, complete_reg: 0 };
+  let googleAds = { clean_cost: 0, dirty_cost: 0, clean_impr: 0, dirty_impr: 0, clean_clicks: 0, dirty_clicks: 0 };
+  let ga4 = {};
+  for (const g of DATA.groups.all) ga4[g] = 0;
+
+  const googleWantsFormat = formatos.has(DATA.google_ads_formato || 'Video') || formatos.has('Estáticos') || formatos.has('Video');
+
+  for (const d of days) {
+    if (wantMeta) {
+      const m = metaAgg(d, etapas, formatos);
+      meta.spend += m.spend; meta.impressions += m.impressions; meta.reach += m.reach;
+      meta.clicks += m.clicks; meta.complete_reg += m.complete_reg;
+    }
+    if (wantGoogle && etapas.has(DATA.google_ads_etapa) && googleWantsFormat) {
+      for (const k of Object.keys(googleAds)) googleAds[k] += (d.google_ads[k] || 0);
+    }
+    for (const g of DATA.groups.all) {
+      const v = d.ga4[g] || 0;
+      if (g === 'Meta Paid' && !wantMeta) continue;
+      if (g === 'Google Paid' && !wantGoogle) continue;
+      if (DATA.groups.paid.includes(g) && !['Meta Paid', 'Google Paid'].includes(g) && !wantOtherPaid) continue;
+      if (DATA.groups.owned.includes(g) && !wantOwned) continue;
+      ga4[g] += v;
+    }
+  }
+
+  const google = {
+    total_cost: googleAds.clean_cost + googleAds.dirty_cost,
+    impressions: googleAds.clean_impr + googleAds.dirty_impr,
+    clicks: googleAds.clean_clicks + googleAds.dirty_clicks,
+  };
+  const paidLeadsTotal = ga4['Meta Paid'] + ga4['Google Paid'] +
+    (wantOtherPaid ? DATA.groups.paid.filter(g => !['Meta Paid', 'Google Paid'].includes(g)).reduce((s, g) => s + ga4[g], 0) : 0);
+  const ownedLeadsTotal = wantOwned ? DATA.groups.owned.reduce((s, g) => s + ga4[g], 0) : 0;
+  const totalLeads = paidLeadsTotal + ownedLeadsTotal +
+    DATA.groups.organic.reduce((s, g) => s + ga4[g], 0) + (ga4['Tagging roto'] || 0) + (ga4['Otros'] || 0);
+
+  return {
+    days: days.length, meta, googleAds, google, ga4,
+    paidLeads: paidLeadsTotal, ownedLeads: ownedLeadsTotal, totalLeads,
+    metaLeadsGA4: ga4['Meta Paid'] || 0,
+    googleLeadsGA4: ga4['Google Paid'] || 0,
+  };
+}
+
+function valueForDay(d, key) {
+  const etapas = STATE.etapas;
+  const formatos = STATE.formatos;
+  const wantMeta = STATE.platforms.has('meta');
+  const wantGoogle = STATE.platforms.has('google');
+  const wantOwned = STATE.platforms.has('owned');
+  const m = wantMeta ? metaAgg(d, etapas, formatos) : { spend: 0, impressions: 0, reach: 0, clicks: 0, complete_reg: 0 };
+  const metaLeadsGA4 = wantMeta ? (d.ga4['Meta Paid'] || 0) : 0;
+  const googleLeadsGA4 = wantGoogle ? (d.ga4['Google Paid'] || 0) : 0;
+  const gAds = wantGoogle && etapas.has(DATA.google_ads_etapa) ? d.google_ads : { clean_cost: 0, dirty_cost: 0, clean_impr: 0, dirty_impr: 0, clean_clicks: 0, dirty_clicks: 0 };
+  const gCost = gAds.clean_cost + gAds.dirty_cost;
+  const gImpr = gAds.clean_impr + gAds.dirty_impr;
+  const gClicks = gAds.clean_clicks + gAds.dirty_clicks;
+  const ownedLeads = wantOwned ? DATA.groups.owned.reduce((s, g) => s + (d.ga4[g] || 0), 0) : 0;
+
+  switch (key) {
+    case 'meta_spend': return m.spend;
+    case 'google_cost': return gCost;
+    case 'meta_leads_ga4': return metaLeadsGA4;
+    case 'google_leads_ga4': return googleLeadsGA4;
+    case 'owned_leads': return ownedLeads;
+    case 'total_leads': return metaLeadsGA4 + googleLeadsGA4 + ownedLeads;
+    case 'meta_cpl': return metaLeadsGA4 ? m.spend / metaLeadsGA4 : 0;
+    case 'google_cpl': return googleLeadsGA4 ? gCost / googleLeadsGA4 : 0;
+    case 'meta_ctr': return m.impressions ? m.clicks / m.impressions * 100 : 0;
+    case 'meta_freq': return m.reach ? m.impressions / m.reach : 0;
+    default: return 0;
+  }
+}
+
+function sparkline(data, color) {
+  if (!data.length) return '';
+  const W = 220, H = 36, P = 2;
+  const maxV = Math.max(...data, 1);
+  const step = data.length > 1 ? (W - 2 * P) / (data.length - 1) : 0;
+  const pts = data.map((v, i) => `${P + i * step},${H - P - (v / maxV) * (H - 2 * P)}`);
+  const path = 'M ' + pts.join(' L ');
+  const areaPath = path + ` L ${P + (data.length - 1) * step},${H - P} L ${P},${H - P} Z`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:${H}px"><path d="${areaPath}" fill="${color}" fill-opacity="0.1"/><path d="${path}" fill="none" stroke="${color}" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+
+const COLOR_MAP = {
+  'curve-meta': '#4A6FA5', 'curve-google': '#C87850',
+  'curve-owned': '#6B8E4E', 'curve-total': '#14140F',
+};
+
+function lineChart(chartId, tooltipId, days, series, opts = {}) {
+  const svgEl = document.getElementById(chartId);
+  const tt = document.getElementById(tooltipId);
+  const container = svgEl.parentElement;
+  const W = 640, H = 220, P = { t: 12, r: 16, b: 30, l: 48 };
+  const seriesData = series.map(s => days.map(d => valueForDay(d, s.key)));
+  if (!days.length) {
+    svgEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}"><text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#8B8B82" font-size="12">Sin datos en el rango</text></svg>`;
+    return;
+  }
+  const xs = days.map((_, i) => P.l + (i / Math.max(days.length - 1, 1)) * (W - P.l - P.r));
+  const allVals = seriesData.flat();
+  const maxY = Math.max(...allVals, 1);
+  const yScale = v => H - P.b - (v / maxY) * (H - P.t - P.b);
+  const yTicks = 4;
+  let gridLines = '';
+  for (let i = 0; i <= yTicks; i++) {
+    const y = P.t + (i / yTicks) * (H - P.t - P.b);
+    const v = maxY * (1 - i / yTicks);
+    let label;
+    if (opts.yPrefix === '$') label = '$' + Math.round(v);
+    else if (opts.ySuffix === '%') label = v.toFixed(1) + '%';
+    else label = Math.round(v);
+    gridLines += `<line class="grid-line" x1="${P.l}" y1="${y}" x2="${W - P.r}" y2="${y}"/>`;
+    gridLines += `<text class="axis-label" x="${P.l - 6}" y="${y + 3}" text-anchor="end">${label}</text>`;
+  }
+  let xLabels = '';
+  const xLabelStep = Math.max(1, Math.floor(days.length / 6));
+  days.forEach((d, i) => {
+    if (i % xLabelStep === 0 || i === days.length - 1) {
+      xLabels += `<text class="axis-label" x="${xs[i]}" y="${H - 10}" text-anchor="middle">${shortDate(d.date)}</text>`;
+    }
+  });
+  const markerIdx = days.findIndex(d => d.date === '2026-09-04');
+  let markerHtml = '';
+  if (markerIdx >= 0) {
+    const mx = xs[markerIdx];
+    markerHtml = `<line class="marker-line" x1="${mx}" y1="${P.t}" x2="${mx}" y2="${H - P.b}"/><text class="marker-label" x="${mx}" y="${P.t - 2}" text-anchor="middle">04-sept</text>`;
+  }
+  const curves = series.map((s) => {
+    const path = days.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xs[i]} ${yScale(valueForDay(d, s.key))}`).join(' ');
+    return `<path class="curve ${s.className}" d="${path}"/>`;
+  }).join('');
+  const dots = series.map((s, si) => `<circle class="cross-dot cross-dot-${si}" r="4" fill="#FFFFFF" stroke-width="2" stroke="${COLOR_MAP[s.className]}"/>`).join('');
+  const crosshairX = `<line class="crosshair" id="cx-${chartId}" x1="0" y1="${P.t}" x2="0" y2="${H - P.b}"/>`;
+  svgEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="height:${H}px" id="svg-${chartId}">${gridLines}${markerHtml}${curves}${crosshairX}${dots}${xLabels}<rect x="${P.l}" y="${P.t}" width="${W - P.l - P.r}" height="${H - P.t - P.b}" fill="transparent" pointer-events="all" id="hover-${chartId}"/></svg>`;
+  const svg = document.getElementById(`svg-${chartId}`);
+  const hoverRect = document.getElementById(`hover-${chartId}`);
+  const crossX = document.getElementById(`cx-${chartId}`);
+  const crossDots = svg.querySelectorAll('.cross-dot');
+  hoverRect.addEventListener('mousemove', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const svgX = (e.clientX - rect.left) / rect.width * W;
+    let closestIdx = 0, closestDist = Infinity;
+    for (let i = 0; i < xs.length; i++) {
+      const d = Math.abs(xs[i] - svgX);
+      if (d < closestDist) { closestDist = d; closestIdx = i; }
+    }
+    const day = days[closestIdx];
+    crossX.setAttribute('x1', xs[closestIdx]);
+    crossX.setAttribute('x2', xs[closestIdx]);
+    crossX.classList.add('visible');
+    crossDots.forEach((dot, si) => {
+      dot.setAttribute('cx', xs[closestIdx]);
+      dot.setAttribute('cy', yScale(seriesData[si][closestIdx]));
+      dot.classList.add('visible');
+    });
+    let ttHtml = `<div class="tt-date">${day.date}</div>`;
+    series.forEach((s, si) => {
+      const v = seriesData[si][closestIdx];
+      const color = COLOR_MAP[s.className];
+      const formatted = opts.yPrefix === '$' ? '$' + fmt(v, 2) : (opts.ySuffix === '%' ? fmt(v, 2) + '%' : fmt(v));
+      ttHtml += `<div class="tt-row"><span class="tt-label"><span class="tt-dot" style="background:${color}"></span>${s.label}</span><span class="tt-value">${formatted}</span></div>`;
+    });
+    tt.innerHTML = ttHtml;
+    tt.classList.add('visible');
+    const contRect = container.getBoundingClientRect();
+    let ttLeft = e.clientX - contRect.left + 12;
+    let ttTop = e.clientY - contRect.top - 20;
+    if (ttLeft + 220 > contRect.width) ttLeft = e.clientX - contRect.left - 230;
+    if (ttTop < 0) ttTop = 0;
+    tt.style.left = ttLeft + 'px';
+    tt.style.top = ttTop + 'px';
+  });
+  hoverRect.addEventListener('mouseleave', () => {
+    crossX.classList.remove('visible');
+    crossDots.forEach(d => d.classList.remove('visible'));
+    tt.classList.remove('visible');
+  });
+}
+
+function render() {
+  const daysAll = dailyInRange(STATE.from, STATE.to);
+  const nDays = daysAll.length;
+  const rangeDesc = `${STATE.from} → ${STATE.to} · ${nDays}d`;
+  document.getElementById('range-desc').textContent = rangeDesc;
+  document.getElementById('range-desc-2').textContent = rangeDesc;
+  let refDays;
+  if (STATE.compareCustom && STATE.cmpFrom && STATE.cmpTo) {
+    refDays = dailyInRange(STATE.cmpFrom, STATE.cmpTo);
+  } else {
+    const refTo = daysAgo(STATE.from, 1);
+    const refFrom = daysAgo(refTo, nDays - 1);
+    refDays = dailyInRange(refFrom, refTo);
+  }
+  const A = aggregate(daysAll);
+  const B = aggregate(refDays);
+  renderHero(A, B, daysAll);
+  renderCharts(daysAll);
+  renderEffTable(A, B);
+  renderMix(daysAll);
+  renderBitacora();
+  renderNotes(A, B, daysAll);
+}
+
+function renderHero(A, B, days) {
+  const metaCPM = A.meta.impressions ? A.meta.spend / (A.meta.impressions / 1000) : 0;
+  const metaCPC = A.meta.clicks ? A.meta.spend / A.meta.clicks : 0;
+  const metaCTR = A.meta.impressions ? A.meta.clicks / A.meta.impressions * 100 : 0;
+  const metaFreq = A.meta.reach ? A.meta.impressions / A.meta.reach : 0;
+  const metaCPL = A.metaLeadsGA4 ? A.meta.spend / A.metaLeadsGA4 : 0;
+  const googleCPM = A.google.impressions ? A.google.total_cost / (A.google.impressions / 1000) : 0;
+  const googleCPC = A.google.clicks ? A.google.total_cost / A.google.clicks : 0;
+  const googleCTR = A.google.impressions ? A.google.clicks / A.google.impressions * 100 : 0;
+  const googleCVR = A.google.clicks ? A.googleLeadsGA4 / A.google.clicks * 100 : 0;
+  const googleCPL = A.googleLeadsGA4 ? A.google.total_cost / A.googleLeadsGA4 : 0;
+  const last28 = DATA.daily.slice(-28);
+  const paidRatio = A.totalLeads ? A.paidLeads / A.totalLeads * 100 : 0;
+  const paidRatioB = B.totalLeads ? B.paidLeads / B.totalLeads * 100 : 0;
+  const tiles = [
+    { cls: '', label: `Meta · ${A.days}d`, prefix: '$', value: fmt(A.meta.spend, 0),
+      context: `${fmt(A.metaLeadsGA4)} leads · ${fmt(A.meta.impressions / 1000, 0)}K imp`,
+      delta: delta(A.meta.spend, B.meta.spend), deltaLabel: 'vs. período comparado',
+      spark: last28.map(d => valueForDay(d, 'meta_spend')), sparkColor: '#4A6FA5',
+      kpis: [
+        { k: 'CPM', v: '$' + fmt(metaCPM, 2) },
+        { k: 'CPC', v: '$' + fmt(metaCPC, 2) },
+        { k: 'CTR', v: fmt(metaCTR, 2) + '%' },
+        { k: 'Freq', v: fmt(metaFreq, 1) + 'x' },
+        { k: 'CPL', v: '$' + fmt(metaCPL, 0) },
+        { k: 'Reach', v: fmt(A.meta.reach / 1000, 0) + 'K' },
+      ]
+    },
+    { cls: 'google', label: `Google · ${A.days}d`, prefix: '$', value: fmt(A.google.total_cost, 0),
+      context: `${fmt(A.googleLeadsGA4)} leads · ${fmt(A.google.impressions / 1000, 0)}K imp`,
+      delta: delta(A.google.total_cost, B.google.total_cost), deltaLabel: 'vs. período comparado',
+      spark: last28.map(d => valueForDay(d, 'google_cost')), sparkColor: '#C87850',
+      kpis: [
+        { k: 'CPM', v: '$' + fmt(googleCPM, 2) },
+        { k: 'CPC', v: '$' + fmt(googleCPC, 2) },
+        { k: 'CTR', v: fmt(googleCTR, 2) + '%' },
+        { k: 'CVR', v: fmt(googleCVR, 2) + '%' },
+        { k: 'CPL', v: '$' + fmt(googleCPL, 0) },
+        { k: 'Clicks', v: fmt(A.google.clicks) },
+      ]
+    },
+    { cls: 'total', label: `Leads totales · ${A.days}d`, value: fmt(A.totalLeads),
+      context: `${fmt(A.paidLeads)} paid · ${fmt(A.ownedLeads)} propios`,
+      delta: delta(A.totalLeads, B.totalLeads), deltaLabel: 'vs. período comparado',
+      spark: last28.map(d => valueForDay(d, 'total_leads')), sparkColor: '#003D7A',
+      kpis: [
+        { k: 'Meta', v: fmt(A.metaLeadsGA4) },
+        { k: 'Google', v: fmt(A.googleLeadsGA4) },
+        { k: 'Propios', v: fmt(A.ownedLeads) },
+        { k: 'Total paid', v: fmt(A.paidLeads) },
+        { k: 'Hoy', v: fmt(days.length ? valueForDay(days[days.length-1], 'total_leads') : 0) },
+        { k: 'Prom/día', v: fmt(A.totalLeads / (A.days || 1), 0) },
+      ]
+    },
+    { cls: 'owned', label: `Ratio Paid ÷ Total · ${A.days}d`, value: paidRatio.toFixed(0), suffix: '%',
+      context: `Propios traen ${(100 - paidRatio).toFixed(0)}% de los leads`,
+      delta: delta(paidRatio, paidRatioB), deltaLabel: 'peso paid vs. período comparado',
+      spark: last28.map(d => {
+        const t = valueForDay(d, 'total_leads');
+        const p = valueForDay(d, 'meta_leads_ga4') + valueForDay(d, 'google_leads_ga4');
+        return t ? p / t * 100 : 0;
+      }),
+      sparkColor: '#6B8E4E',
+      kpis: [
+        { k: 'Total', v: fmt(A.totalLeads) },
+        { k: 'Paid', v: fmt(A.paidLeads) },
+        { k: 'Propios', v: fmt(A.ownedLeads) },
+        { k: 'Meta/día', v: fmt(A.metaLeadsGA4 / (A.days || 1), 0) },
+        { k: 'Google/día', v: fmt(A.googleLeadsGA4 / (A.days || 1), 0) },
+        { k: '% propios', v: (100 - paidRatio).toFixed(0) + '%' },
+      ]
+    },
+  ];
+  document.getElementById('hero-tiles').innerHTML = tiles.map(t => `
+    <div class="hero-tile ${t.cls}">
+      <div class="tile-label">${t.label}</div>
+      <div class="tile-hero-value">${t.prefix ? `<span class="prefix">${t.prefix}</span>` : ''}${t.value}${t.suffix ? `<span class="suffix">${t.suffix}</span>` : ''}</div>
+      <div class="tile-context">${t.context}</div>
+      <div class="tile-delta ${t.delta.cls}">${t.delta.txt} · ${t.deltaLabel}</div>
+      <div class="tile-sparkline">${sparkline(t.spark, t.sparkColor)}</div>
+      <div class="tile-kpis">
+        ${t.kpis.map(k => `<div class="kpi-mini"><div class="k">${k.k}</div><div class="v">${k.v}</div></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCharts(days) {
+  document.getElementById('cost-legend').innerHTML = `<span class="legend-item"><span class="legend-dot" style="background:#4A6FA5"></span>Meta</span><span class="legend-item"><span class="legend-dot" style="background:#C87850"></span>Google</span>`;
+  lineChart('chart-cost', 'tt-cost', days, [
+    { key: 'meta_spend', className: 'curve-meta', label: 'Meta' },
+    { key: 'google_cost', className: 'curve-google', label: 'Google' },
+  ], { yPrefix: '$' });
+  document.getElementById('leads-legend').innerHTML = `<span class="legend-item"><span class="legend-dot" style="background:#4A6FA5"></span>Meta</span><span class="legend-item"><span class="legend-dot" style="background:#C87850"></span>Google</span><span class="legend-item"><span class="legend-dot" style="background:#6B8E4E"></span>Propios</span><span class="legend-item"><span class="legend-dot" style="background:#14140F"></span>Total</span>`;
+  lineChart('chart-leads', 'tt-leads', days, [
+    { key: 'meta_leads_ga4', className: 'curve-meta', label: 'Meta' },
+    { key: 'google_leads_ga4', className: 'curve-google', label: 'Google' },
+    { key: 'owned_leads', className: 'curve-owned', label: 'Propios' },
+    { key: 'total_leads', className: 'curve-total', label: 'Total' },
+  ]);
+  document.getElementById('cpl-legend').innerHTML = `<span class="legend-item"><span class="legend-dot" style="background:#4A6FA5"></span>Meta CPL</span><span class="legend-item"><span class="legend-dot" style="background:#C87850"></span>Google CPL</span>`;
+  lineChart('chart-cpl', 'tt-cpl', days, [
+    { key: 'meta_cpl', className: 'curve-meta', label: 'Meta CPL' },
+    { key: 'google_cpl', className: 'curve-google', label: 'Google CPL' },
+  ], { yPrefix: '$' });
+  document.getElementById('ctrfreq-legend').innerHTML = `<span class="legend-item"><span class="legend-dot" style="background:#4A6FA5"></span>CTR% Meta</span><span class="legend-item"><span class="legend-dot" style="background:#C87850"></span>Frecuencia Meta</span>`;
+  lineChart('chart-ctr-freq', 'tt-ctrfreq', days, [
+    { key: 'meta_ctr', className: 'curve-meta', label: 'CTR%' },
+    { key: 'meta_freq', className: 'curve-google', label: 'Freq' },
+  ]);
+}
+
+function renderEffTable(A, B) {
+  const metaCPM = A.meta.impressions ? A.meta.spend / (A.meta.impressions / 1000) : 0;
+  const metaCPC = A.meta.clicks ? A.meta.spend / A.meta.clicks : 0;
+  const metaCTR = A.meta.impressions ? A.meta.clicks / A.meta.impressions * 100 : 0;
+  const metaCVR = A.meta.clicks ? A.metaLeadsGA4 / A.meta.clicks * 100 : 0;
+  const metaCPL = A.metaLeadsGA4 ? A.meta.spend / A.metaLeadsGA4 : 0;
+  const metaFreq = A.meta.reach ? A.meta.impressions / A.meta.reach : 0;
+  const googCPM = A.google.impressions ? A.google.total_cost / (A.google.impressions / 1000) : 0;
+  const googCPC = A.google.clicks ? A.google.total_cost / A.google.clicks : 0;
+  const googCTR = A.google.impressions ? A.google.clicks / A.google.impressions * 100 : 0;
+  const googCVR = A.google.clicks ? A.googleLeadsGA4 / A.google.clicks * 100 : 0;
+  const googCPL = A.googleLeadsGA4 ? A.google.total_cost / A.googleLeadsGA4 : 0;
+  const refCPMmeta = B.meta.impressions ? B.meta.spend / (B.meta.impressions / 1000) : 0;
+  const refCPCmeta = B.meta.clicks ? B.meta.spend / B.meta.clicks : 0;
+  const refCPLmeta = B.metaLeadsGA4 ? B.meta.spend / B.metaLeadsGA4 : 0;
+  const refCPMgoog = B.google.impressions ? B.google.total_cost / (B.google.impressions / 1000) : 0;
+  const refCPCgoog = B.google.clicks ? B.google.total_cost / B.google.clicks : 0;
+  const refCPLgoog = B.googleLeadsGA4 ? B.google.total_cost / B.googleLeadsGA4 : 0;
+  const rows = [
+    { name: 'Meta', dot: '#4A6FA5', show: STATE.platforms.has('meta'),
+      spend: A.meta.spend, impr: A.meta.impressions, clicks: A.meta.clicks, leads: A.metaLeadsGA4,
+      cpm: metaCPM, cpc: metaCPC, ctr: metaCTR, cvr: metaCVR, cpl: metaCPL, freq: metaFreq,
+      dCpm: deltaInv(metaCPM, refCPMmeta), dCpc: deltaInv(metaCPC, refCPCmeta), dCpl: deltaInv(metaCPL, refCPLmeta),
+    },
+    { name: 'Google', dot: '#C87850', show: STATE.platforms.has('google'),
+      spend: A.google.total_cost, impr: A.google.impressions, clicks: A.google.clicks, leads: A.googleLeadsGA4,
+      cpm: googCPM, cpc: googCPC, ctr: googCTR, cvr: googCVR, cpl: googCPL, freq: null,
+      dCpm: deltaInv(googCPM, refCPMgoog), dCpc: deltaInv(googCPC, refCPCgoog), dCpl: deltaInv(googCPL, refCPLgoog),
+    },
+  ].filter(r => r.show);
+  document.querySelector('#eff-table tbody').innerHTML = rows.map(r => `
+    <tr>
+      <td class="platform"><span class="plat-dot" style="background:${r.dot}"></span>${r.name}</td>
+      <td class="num">$${fmt(r.spend, 0)}</td>
+      <td class="num">${fmt(r.impr)}</td>
+      <td class="num">${fmt(r.clicks)}</td>
+      <td class="num-highlight">${fmt(r.leads)}</td>
+      <td class="num">$${fmt(r.cpm, 2)} <span class="delta ${r.dCpm.cls}" style="font-size:10px;margin-left:4px">${r.dCpm.txt}</span></td>
+      <td class="num">$${fmt(r.cpc, 2)} <span class="delta ${r.dCpc.cls}" style="font-size:10px;margin-left:4px">${r.dCpc.txt}</span></td>
+      <td class="num">${fmt(r.ctr, 2)}%</td>
+      <td class="num">${fmt(r.cvr, 2)}%</td>
+      <td class="num-highlight">$${fmt(r.cpl, 0)} <span class="delta ${r.dCpl.cls}" style="font-size:10px;margin-left:4px">${r.dCpl.txt}</span></td>
+      <td class="num">${r.freq !== null ? fmt(r.freq, 1) + 'x' : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderMix(days) {
+  const groupsToShow = [...DATA.groups.paid, ...DATA.groups.owned, ...DATA.groups.organic, 'Otros'];
+  const mixTotal = days.reduce((s, d) => s + groupsToShow.reduce((s2, g) => s2 + (d.ga4[g] || 0), 0), 0);
+  const mixData = groupsToShow.map(g => ({
+    name: g, value: days.reduce((s, d) => s + (d.ga4[g] || 0), 0),
+  })).filter(r => r.value > 0)
+    .map(r => ({ ...r, pct: r.value / (mixTotal || 1) * 100 }))
+    .sort((a, b) => b.value - a.value);
+  const groupColor = {
+    'Meta Paid': '#4A6FA5', 'Google Paid': '#C87850',
+    'YouTube Paid': '#B074D4', 'DV360 Paid': '#B074D4',
+    'TikTok Paid': '#B074D4', 'Primicias Paid': '#B074D4',
+    'Salesforce': '#6B8E4E', 'WhatsApp': '#6B8E4E',
+    'App Diners': '#6B8E4E', 'Email otros': '#6B8E4E',
+    'Google Organic': '#C2C2B8', 'Instagram Organic': '#C2C2B8',
+    'Directo': '#C2C2B8', 'Otros': '#C2C2B8',
+  };
+  document.getElementById('mix-list').innerHTML = mixData.map(r => `
+    <div class="mix-row">
+      <div class="mix-label"><span class="mix-dot" style="background:${groupColor[r.name] || '#C2C2B8'}"></span>${r.name}</div>
+      <div class="mix-bar-container"><div class="mix-bar" style="width:${r.pct}%; background:${groupColor[r.name] || '#C2C2B8'}"></div></div>
+      <div class="mix-num">${fmt(r.value)}<span class="pct">${r.pct.toFixed(1)}%</span></div>
+    </div>
+  `).join('');
+}
+
+function renderBitacora() {
+  if (!DATA.bitacora) return;
+  const monthNames = ['ene','feb','mar','abr','may','jun','jul','ago','sept','oct','nov','dic'];
+  const html = DATA.bitacora.slice().reverse().map(b => {
+    const [y, m, d] = b.date.split('-');
+    const body = b.body_client || b.body || '';
+    return `
+      <div class="bit-item">
+        <div class="bit-date">
+          <span class="day-num">${d}</span>
+          <span class="month">${monthNames[parseInt(m)-1]} ${y}</span>
+        </div>
+        <div class="bit-body">
+          <span class="bit-type ${b.type}">${b.type}</span>
+          <div class="bit-title">${b.title}</div>
+          <div class="bit-desc">${body}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('bitacora-list').innerHTML = html;
+}
+
+function renderNotes(A, B, days) {
+  const metaFreq = A.meta.reach ? A.meta.impressions / A.meta.reach : 0;
+  const metaCPL = A.metaLeadsGA4 ? A.meta.spend / A.metaLeadsGA4 : 0;
+  const googleCPL = A.googleLeadsGA4 ? A.google.total_cost / A.googleLeadsGA4 : 0;
+  const notes = [
+    {
+      cls: '',
+      title: `Frecuencia Meta · ${fmt(metaFreq, 1)}x`,
+      body: `Frecuencia sobre la base cerrada de socios en el rango seleccionado. Métrica de referencia para el ritmo de exposición.`
+    },
+    {
+      cls: '',
+      title: `Propios vs. paid`,
+      body: `Rango actual: propios ${fmt(A.ownedLeads)} · paid ${fmt(A.paidLeads)}. ${A.ownedLeads > A.paidLeads ? 'Los canales propios (email, WhatsApp, app) están trayendo más leads que la pauta paid combinada.' : 'Paid supera a propios en este rango.'}`
+    },
+    {
+      cls: '',
+      title: `CPL comparativo · Meta $${fmt(metaCPL, 0)} vs. Google $${fmt(googleCPL, 0)}`,
+      body: `Comparación con leads GA4 (fuente comparable entre plataformas).`
+    },
+  ];
+  document.getElementById('notes-list').innerHTML = notes.map(n => `
+    <div class="note-row ${n.cls}">
+      <div class="note-title">${n.title}</div>
+      <div class="note-body">${n.body}</div>
+    </div>
+  `).join('');
+}
+
+function initFilters() {
+  document.getElementById('presets').innerHTML = PRESETS.map(p =>
+    `<button class="preset-btn" data-preset="${p.key}">${p.label}</button>`
+  ).join('');
+  document.querySelectorAll('.preset-btn').forEach(b => b.addEventListener('click', () => applyPreset(b.dataset.preset)));
+  const platforms = [
+    { key: 'meta', label: 'Meta', color: '#4A6FA5' },
+    { key: 'google', label: 'Google', color: '#C87850' },
+    { key: 'other_paid', label: 'Otros Paid', color: '#B074D4' },
+    { key: 'owned', label: 'Propios', color: '#6B8E4E' },
+  ];
+  document.getElementById('platform-chips').innerHTML = platforms.map(p =>
+    `<div class="chip active" data-platform="${p.key}"><span class="dot" style="background:${p.color}"></span>${p.label}</div>`
+  ).join('');
+  document.querySelectorAll('[data-platform]').forEach(c => c.addEventListener('click', () => {
+    const k = c.dataset.platform;
+    if (STATE.platforms.has(k)) { STATE.platforms.delete(k); c.classList.remove('active'); }
+    else { STATE.platforms.add(k); c.classList.add('active'); }
+    render();
+  }));
+  document.getElementById('etapa-chips').innerHTML = DATA.etapas.map(e =>
+    `<div class="chip active" data-etapa="${e}">${e}</div>`
+  ).join('');
+  document.querySelectorAll('[data-etapa]').forEach(c => c.addEventListener('click', () => {
+    const k = c.dataset.etapa;
+    if (STATE.etapas.has(k)) { STATE.etapas.delete(k); c.classList.remove('active'); }
+    else { STATE.etapas.add(k); c.classList.add('active'); }
+    render();
+  }));
+  document.getElementById('formato-chips').innerHTML = (DATA.formatos || ['Estáticos','Video','Dinámicos','Otros']).map(f =>
+    `<div class="chip active" data-formato="${f}">${f}</div>`
+  ).join('');
+  document.querySelectorAll('[data-formato]').forEach(c => c.addEventListener('click', () => {
+    const k = c.dataset.formato;
+    if (STATE.formatos.has(k)) { STATE.formatos.delete(k); c.classList.remove('active'); }
+    else { STATE.formatos.add(k); c.classList.add('active'); }
+    render();
+  }));
+  document.getElementById('date-from').min = DATA.date_min;
+  document.getElementById('date-from').max = DATA.date_max;
+  document.getElementById('date-to').min = DATA.date_min;
+  document.getElementById('date-to').max = DATA.date_max;
+  document.getElementById('date-from').addEventListener('change', (e) => { STATE.from = e.target.value; setActivePreset('custom'); render(); });
+  document.getElementById('date-to').addEventListener('change', (e) => { STATE.to = e.target.value; setActivePreset('custom'); render(); });
+  document.getElementById('compare-custom-toggle').addEventListener('change', (e) => {
+    STATE.compareCustom = e.target.checked;
+    document.getElementById('compare-range').classList.toggle('visible', STATE.compareCustom);
+    render();
+  });
+  document.getElementById('cmp-from').min = DATA.date_min;
+  document.getElementById('cmp-from').max = DATA.date_max;
+  document.getElementById('cmp-to').min = DATA.date_min;
+  document.getElementById('cmp-to').max = DATA.date_max;
+  document.getElementById('cmp-from').addEventListener('change', (e) => { STATE.cmpFrom = e.target.value; render(); });
+  document.getElementById('cmp-to').addEventListener('change', (e) => { STATE.cmpTo = e.target.value; render(); });
+  document.getElementById('btn-upload').addEventListener('click', () => document.getElementById('modal-overlay').classList.add('visible'));
+  document.getElementById('btn-cancel').addEventListener('click', () => document.getElementById('modal-overlay').classList.remove('visible'));
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modal-overlay') e.target.classList.remove('visible');
+  });
+  document.getElementById('btn-download').addEventListener('click', downloadUpdatedHTML);
+  setupDropzone('dropzone-ga4', 'file-ga4', handleGA4Upload);
+  setupDropzone('dropzone-google', 'file-google', handleGoogleUpload);
+}
+
+function applyPreset(key) {
+  setActivePreset(key);
+  const preset = PRESETS.find(p => p.key === key);
+  if (key === 'custom') return;
+  if (key === 'all') { STATE.from = DATA.date_min; STATE.to = DATA.date_max; }
+  else if (preset.days) {
+    STATE.to = DATA.date_max;
+    STATE.from = daysAgo(DATA.date_max, preset.days - 1);
+  }
+  document.getElementById('date-from').value = STATE.from;
+  document.getElementById('date-to').value = STATE.to;
+  render();
+}
+function setActivePreset(key) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === key));
+}
+
+function setupDropzone(zoneId, inputId, handler) {
+  const zone = document.getElementById(zoneId);
+  const input = document.getElementById(inputId);
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0], handler);
+  });
+  input.addEventListener('change', (e) => {
+    if (e.target.files[0]) readFile(e.target.files[0], handler);
+  });
+}
+function readFile(file, handler) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      handler(e.target.result, file.name);
+      showStatus('success', `✓ ${file.name} cargado. Dash actualizado. Descarga el HTML actualizado para subirlo al hosting.`);
+      render();
+    } catch (err) {
+      showStatus('error', `✗ Error procesando ${file.name}: ${err.message}`);
+      console.error(err);
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+function showStatus(cls, msg) {
+  const el = document.getElementById('upload-status');
+  el.className = 'upload-status visible ' + cls;
+  el.textContent = msg;
+}
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim() || line.startsWith('#')) continue;
+    const row = []; let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; continue; }
+      if (c === ',' && !inQ) { row.push(cur); cur = ''; continue; }
+      cur += c;
+    }
+    row.push(cur);
+    rows.push(row);
+  }
+  return rows;
+}
+function parseDateGA4(s) {
+  s = s.trim();
+  if (s.length === 8 && /^\d+$/.test(s)) return `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6)}`;
+  return s;
+}
+function parseNumES(s) {
+  s = String(s).trim().replace(/"/g, '');
+  if (!s) return 0;
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (s.includes(',')) s = s.replace(',', '.');
+  else if (s.includes('.') && s.split('.').pop().length === 3 && /^\d+$/.test(s.replace(/\./g, ''))) s = s.replace(/\./g, '');
+  return parseFloat(s) || 0;
+}
+function canonizeSource(sm) {
+  sm = sm.trim().toLowerCase();
+  if (['meta / c', 'meta_aon /', 'fb / paid', 'meta / paid'].some(p => sm.startsWith(p))) return 'Meta Paid';
+  if (['google / cpc', 'google / paid-media', 'google / cpa'].includes(sm)) return 'Google Paid';
+  if (sm.startsWith('youtube /')) return 'YouTube Paid';
+  if (sm.startsWith('dv360 /')) return 'DV360 Paid';
+  if (sm.startsWith('tiktok /')) return 'TikTok Paid';
+  if (sm.startsWith('primicias /')) return 'Primicias Paid';
+  if (sm.startsWith('salesforce /')) return 'Salesforce';
+  if (sm.includes('whatsapp') && (sm.includes('concierge') || sm.includes('landing') || sm.includes('whatsapp-externos'))) return 'WhatsApp';
+  if (sm.startsWith('app-blupersonas') || sm.startsWith('app-blubenefits')) return 'App Diners';
+  if (sm.startsWith('responsys') || sm.includes('responsysoracle') || sm.startsWith('estados-cuenta') || sm.startsWith('notificacion') || sm === 'outlook / email') return 'Email otros';
+  if (sm === 'google / organic') return 'Google Organic';
+  if (sm.startsWith('instagram /')) return 'Instagram Organic';
+  if (sm === '(direct) / (none)') return 'Directo';
+  if (sm === '(not set)' || sm.includes('(data not available)')) return 'Tagging roto';
+  return 'Otros';
+}
+function handleGA4Upload(text, name) {
+  const rows = parseCSV(text);
+  if (!rows.length) throw new Error('CSV vacío');
+  const header = rows[0];
+  const iDate = header.indexOf('Fecha');
+  const iSource = header.indexOf('Fuente/medio');
+  const iUsers = header.indexOf('Usuarios activos');
+  if (iDate < 0 || iSource < 0 || iUsers < 0) throw new Error('Columnas Fecha/Fuente/medio/Usuarios activos no encontradas');
+  const byDay = {};
+  for (const row of rows.slice(1)) {
+    if (row.length < 3) continue;
+    const d = parseDateGA4(row[iDate] || '');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) continue;
+    const src = row[iSource];
+    const users = parseInt(row[iUsers]) || 0;
+    if (!byDay[d]) byDay[d] = {};
+    const g = canonizeSource(src);
+    byDay[d][g] = (byDay[d][g] || 0) + users;
+  }
+  for (const day of DATA.daily) {
+    if (byDay[day.date]) {
+      for (const g of DATA.groups.all) day.ga4[g] = byDay[day.date][g] || 0;
+    }
+  }
+  for (const d in byDay) {
+    if (!DATA.daily.find(x => x.date === d)) {
+      const newRow = { date: d, ga4: {}, meta: {}, google_ads: { clean_cost: 0, dirty_cost: 0, clean_impr: 0, dirty_impr: 0, clean_clicks: 0, dirty_clicks: 0 } };
+      for (const g of DATA.groups.all) newRow.ga4[g] = byDay[d][g] || 0;
+      DATA.daily.push(newRow);
+    }
+  }
+  DATA.daily.sort((a, b) => a.date.localeCompare(b.date));
+  DATA.date_max = DATA.daily[DATA.daily.length - 1].date;
+  document.getElementById('ts-range').textContent = `${DATA.date_min} → ${DATA.date_max}`;
+}
+function handleGoogleUpload(text, name) {
+  const rows = parseCSV(text);
+  if (!rows.length) throw new Error('CSV vacío');
+  let headerIdx = rows.findIndex(r => r[0] && r[0].startsWith('Campaña'));
+  if (headerIdx < 0) throw new Error('Header "Campaña" no encontrado');
+  const header = rows[headerIdx];
+  const iDay = header.indexOf('Día');
+  const iSegment = header.indexOf('Segmento de audiencia');
+  const iImpr = header.indexOf('Impr.');
+  const iCost = header.indexOf('Coste');
+  const iClicks = header.indexOf('Clics');
+  if (iDay < 0 || iSegment < 0 || iCost < 0) throw new Error('Columnas Día/Segmento/Coste no encontradas');
+  const byDay = {};
+  for (const row of rows.slice(headerIdx + 1)) {
+    if (row.length < 9 || !row[iDay]) continue;
+    const day = row[iDay].trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) continue;
+    const seg = (row[iSegment] || '').toLowerCase();
+    const isClean = seg.includes('remarketing') || seg.includes('customer');
+    if (!byDay[day]) byDay[day] = { clean_cost: 0, dirty_cost: 0, clean_impr: 0, dirty_impr: 0, clean_clicks: 0, dirty_clicks: 0 };
+    const bucket = isClean ? 'clean' : 'dirty';
+    byDay[day][`${bucket}_impr`] += parseInt(parseNumES(row[iImpr])) || 0;
+    byDay[day][`${bucket}_cost`] += parseNumES(row[iCost]);
+    byDay[day][`${bucket}_clicks`] += parseInt(parseNumES(row[iClicks])) || 0;
+  }
+  for (const day of DATA.daily) {
+    if (byDay[day.date]) day.google_ads = byDay[day.date];
+  }
+  for (const d in byDay) {
+    if (!DATA.daily.find(x => x.date === d)) {
+      const newRow = { date: d, ga4: {}, meta: {}, google_ads: byDay[d] };
+      for (const g of DATA.groups.all) newRow.ga4[g] = 0;
+      DATA.daily.push(newRow);
+    }
+  }
+  DATA.daily.sort((a, b) => a.date.localeCompare(b.date));
+  DATA.date_max = DATA.daily[DATA.daily.length - 1].date;
+  document.getElementById('ts-range').textContent = `${DATA.date_min} → ${DATA.date_max}`;
+}
+
+function downloadUpdatedHTML() {
+  // Toma el HTML actual del document, y reemplaza el JSON embebido con el DATA actual (con updates aplicados)
+  const currentHTML = document.documentElement.outerHTML;
+  // Buscar `const DATA = {...};` y reemplazar con el DATA actual
+  const newDataStr = 'const DATA = ' + JSON.stringify(DATA, null, 0) + ';';
+  const updatedHTML = '<!DOCTYPE html>\n' + currentHTML.replace(
+    /const DATA = \{[\s\S]*?\};/,
+    newDataStr
+  );
+  const blob = new Blob([updatedHTML], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'index.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showStatus('success', '✓ HTML descargado como index.html. Súbelo a GitHub Pages reemplazando el existente.');
+}
+
+initFilters();
+applyPreset('14d');
+</script>
+
+</body>
+</html>
