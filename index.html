@@ -1161,11 +1161,18 @@ function handleGoogleUpload(text, name) {
   if (headerIdx < 0) throw new Error('Header "Campaña" no encontrado');
   const header = rows[headerIdx];
   const iDay = header.indexOf('Día');
-  const iSegment = header.indexOf('Segmento de audiencia');
+  let iSegment = header.indexOf('Segmento de audiencia');
+  if (iSegment < 0) iSegment = header.indexOf('Segmento');
   const iImpr = header.indexOf('Impr.');
   const iCost = header.indexOf('Coste');
   const iClicks = header.indexOf('Clics');
-  if (iDay < 0 || iSegment < 0 || iCost < 0) throw new Error('Columnas Día/Segmento/Coste no encontradas');
+  if (iDay < 0 || iSegment < 0 || iCost < 0) {
+    const missing = [];
+    if (iDay < 0) missing.push('Día');
+    if (iSegment < 0) missing.push('Segmento (de audiencia)');
+    if (iCost < 0) missing.push('Coste');
+    throw new Error('Columnas no encontradas: ' + missing.join(', ') + '. Header leído: ' + header.join(' | '));
+  }
   const byDay = {};
   for (const row of rows.slice(headerIdx + 1)) {
     if (row.length < 9 || !row[iDay]) continue;
