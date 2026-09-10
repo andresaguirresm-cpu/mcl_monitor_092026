@@ -120,8 +120,31 @@
     background: var(--surface); color: var(--ink-4); border: 1px solid var(--border);
     border-radius: 3px; opacity: 0.55; z-index: 90;
     font-weight: 500;
+    display: none;
   }
   .btn.ad-mini:hover { opacity: 1; color: var(--ink-3); border-color: var(--border-strong); }
+  .btn.ad-mini.visible-admin { display: inline-block; }
+  .trend-strip {
+    margin: 20px 0 6px; padding: 12px 18px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+    display: flex; flex-wrap: wrap; gap: 26px; align-items: center;
+  }
+  .trend-strip .trend-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600;
+    padding-right: 14px; border-right: 1px solid var(--border);
+  }
+  .trend-strip .trend-metric { display: flex; flex-direction: column; gap: 1px; min-width: 92px; }
+  .trend-strip .trend-metric .m-label { font-size: 9px; color: var(--ink-3); letter-spacing: 0.08em; text-transform: uppercase; }
+  .trend-strip .trend-metric .m-value { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+  .trend-strip .trend-metric .m-delta { font-size: 11px; font-weight: 500; }
+  .trend-strip .trend-metric .m-delta.up { color: var(--up); }
+  .trend-strip .trend-metric .m-delta.down { color: var(--down); }
+  .trend-strip .trend-metric .m-delta.flat { color: var(--flat); }
+  @media (max-width: 700px) {
+    .trend-strip { gap: 16px; }
+    .trend-strip .trend-label { border-right: none; padding-right: 0; }
+  }
   .presets { display: flex; gap: 4px; }
   .preset-btn {
     font-family: inherit; padding: 6px 12px; border-radius: 3px;
@@ -367,6 +390,8 @@
     </div>
   </div>
 </div>
+
+<div class="trend-strip" id="trend-strip" hidden></div>
 
 <section>
   <div class="section-label">Vista rápida · <span id="range-desc">2026-07-17 → 2026-09-07 · 53d</span></div>
@@ -1450,8 +1475,66 @@ function downloadUpdatedHTML() {
   showStatus('success', '✓ HTML descargado como index.html. Súbelo a GitHub Pages reemplazando el existente.');
 }
 
+function renderTrendStrip() {
+  const strip = document.getElementById('trend-strip');
+  if (!strip) return;
+  const daily = DATA.daily.slice().sort((a, b) => a.date.localeCompare(b.date));
+  if (daily.length < 14) { strip.hidden = true; return; }
+  const last7 = daily.slice(-7);
+  const prev7 = daily.slice(-14, -7);
+  const sumBlock = (days) => {
+    let metaLeads = 0, googleLeads = 0, paidLeads = 0, metaSpend = 0, googleSpend = 0;
+    for (const d of days) {
+      metaLeads += d.ga4['Meta Paid'] || 0;
+      googleLeads += d.ga4['Google Paid'] || 0;
+      for (const g of DATA.groups.paid) paidLeads += d.ga4[g] || 0;
+      if (d.meta) {
+        for (const etapa of Object.values(d.meta)) {
+          for (const fmt of Object.values(etapa)) metaSpend += fmt.spend || 0;
+        }
+      }
+      googleSpend += (d.google_ads && (d.google_ads.clean_cost || 0) + (d.google_ads.dirty_cost || 0)) || 0;
+    }
+    const total = metaSpend + googleSpend;
+    return { metaLeads, googleLeads, paidLeads, totalSpend: total, cpl: paidLeads ? total / paidLeads : 0 };
+  };
+  const A = sumBlock(last7);
+  const B = sumBlock(prev7);
+  const dRaw = (cur, ref) => {
+    if (!ref) return { cls: 'flat', txt: '—' };
+    const p = ((cur - ref) / ref) * 100;
+    return { cls: Math.abs(p) < 3 ? 'flat' : (p > 0 ? 'up' : 'down'), txt: (p > 0 ? '+' : '') + p.toFixed(1) + '%' };
+  };
+  const dInv = (cur, ref) => {
+    if (!ref) return { cls: 'flat', txt: '—' };
+    const p = ((cur - ref) / ref) * 100;
+    return { cls: Math.abs(p) < 3 ? 'flat' : (p < 0 ? 'up' : 'down'), txt: (p > 0 ? '+' : '') + p.toFixed(1) + '%' };
+  };
+  const nfInt = new Intl.NumberFormat('es-EC', { maximumFractionDigits: 0 });
+  const metrics = [
+    { label: 'Total leads paid', value: nfInt.format(A.paidLeads), delta: dRaw(A.paidLeads, B.paidLeads) },
+    { label: 'Meta leads', value: nfInt.format(A.metaLeads), delta: dRaw(A.metaLeads, B.metaLeads) },
+    { label: 'Google leads', value: nfInt.format(A.googleLeads), delta: dRaw(A.googleLeads, B.googleLeads) },
+    { label: 'Gasto total', value: '$' + nfInt.format(A.totalSpend), delta: dRaw(A.totalSpend, B.totalSpend) },
+    { label: 'CPL paid', value: '$' + A.cpl.toFixed(2), delta: dInv(A.cpl, B.cpl) },
+  ];
+  strip.hidden = false;
+  strip.innerHTML = '<div class="trend-label">Últimos 7 días<br>vs 7 previos</div>' +
+    metrics.map(m => `<div class="trend-metric"><span class="m-label">${m.label}</span><span class="m-value">${m.value}</span><span class="m-delta ${m.delta.cls}">${m.delta.txt}</span></div>`).join('');
+}
+
+// Keyboard shortcut Ctrl+Shift+D revela/oculta el boton de upload (admin only)
+window.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-upload');
+    if (btn) btn.classList.toggle('visible-admin');
+  }
+});
+
 initFilters();
 applyPreset('all');
+renderTrendStrip();
 </script>
 
 
