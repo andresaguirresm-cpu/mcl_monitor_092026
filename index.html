@@ -691,7 +691,7 @@
 
 <button class="btn ad-mini" id="btn-upload" title="">AD</button>
 
-<div class="modal-overlay visible" id="modal-overlay">
+<div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="dropzone" id="dropzone-ga4">
       <strong>G$</strong>
@@ -1531,6 +1531,11 @@ window.addEventListener('keydown', (e) => {
     if (btn) btn.classList.toggle('visible-admin');
   }
 });
+
+// Guardia: si el HTML descargado trae el modal con clase 'visible' embebida (bug),
+// forzarlo a cerrado al arrancar. El usuario abre el modal con el flujo del boton, no por default.
+const _mo = document.getElementById('modal-overlay');
+if (_mo) _mo.classList.remove('visible');
 
 initFilters();
 applyPreset('all');
