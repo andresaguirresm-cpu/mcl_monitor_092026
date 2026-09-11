@@ -429,16 +429,17 @@
       </div>
     </div>
     <div class="hero-tile campaign-socios">
-      <div class="tile-label">Socios reales · meta 20.000</div>
-      <div class="tile-hero-value" id="cm-soc-val">3.800</div>
-      <div class="tile-context" id="cm-soc-ctx">19% de la meta · proyección al 30-sept 34%</div>
-      <div class="tile-progress-wrap"><div class="tile-progress-bar"><div class="tile-progress-fill" id="cm-soc-fill" style="width:19%;background:#00B8E6"></div></div></div>
+      <div class="tile-label">Leads thank-you · meta 20.000</div>
+      <div class="tile-hero-value" id="cm-soc-val">4.783</div>
+      <div class="tile-subnote" id="cm-soc-subnote" style="font-size:11px;color:var(--ink-3);margin-top:-2px;margin-bottom:6px;">estimado socios reales: 3.150 · restando 1.633 no-socios (análisis Cami 11-sept)</div>
+      <div class="tile-context" id="cm-soc-ctx">24% de la meta · proyección al 30-sept 45%</div>
+      <div class="tile-progress-wrap"><div class="tile-progress-bar"><div class="tile-progress-fill" id="cm-soc-fill" style="width:24%;background:#00B8E6"></div></div></div>
       <div class="tile-kpis">
-        <div class="kpi-mini"><div class="k">Confirmados</div><div class="v" id="cm-soc-conf">3.800</div></div>
+        <div class="kpi-mini"><div class="k">Leads GA4</div><div class="v" id="cm-soc-conf">4.783</div></div>
         <div class="kpi-mini"><div class="k">Meta</div><div class="v" id="cm-soc-meta">20.000</div></div>
-        <div class="kpi-mini"><div class="k">Avance</div><div class="v" id="cm-soc-adv">19%</div></div>
-        <div class="kpi-mini"><div class="k">Proyección</div><div class="v" id="cm-soc-proj">6.725</div></div>
-        <div class="kpi-mini"><div class="k">% cierre</div><div class="v" id="cm-soc-pctclose">34%</div></div>
+        <div class="kpi-mini"><div class="k">Avance</div><div class="v" id="cm-soc-adv">24%</div></div>
+        <div class="kpi-mini"><div class="k">Proyección</div><div class="v" id="cm-soc-proj">9.000</div></div>
+        <div class="kpi-mini"><div class="k">% cierre</div><div class="v" id="cm-soc-pctclose">45%</div></div>
         <div class="kpi-mini"><div class="k">Ventana</div><div class="v">20 días</div></div>
       </div>
     </div>
@@ -1609,53 +1610,56 @@ if (_mo) _mo.classList.remove('visible');
 initFilters();
 applyPreset('all');
 
-// Update card SOCIOS REALES - dinamica calibrada con analisis Cami 11-sept
+// Update card LEADS THANK-YOU (GA4 source of truth) + estimado socios grayout (Cami)
 (function() {
-  var BASE_FER = 3800;
-  var FECHA_BASE_FER = '2026-09-10';
-  var META_SOCIOS = 20000;
-  var FACTOR_CALIBRACION = 0.63;
+  var NO_SOCIOS_CAMI = 1633;
+  var META = 20000;
   var FECHA_CIERRE = '2026-09-30';
 
   if (!DATA.daily || !DATA.daily.length) return;
   var daily = DATA.daily.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
-  var eventosPost = 0;
-  var eventosPostDias = [];
+  var eventosTotal = 0;
+  var eventosPorDia = [];
   for (var i = 0; i < daily.length; i++) {
-    if (daily[i].date > FECHA_BASE_FER) {
-      var ga4 = daily[i].ga4 || {};
-      var totalDia = 0;
-      for (var k in ga4) totalDia += (ga4[k] || 0);
-      eventosPost += totalDia;
-      eventosPostDias.push({date: daily[i].date, total: totalDia});
-    }
+    var ga4 = daily[i].ga4 || {};
+    var totalDia = 0;
+    for (var k in ga4) totalDia += (ga4[k] || 0);
+    eventosTotal += totalDia;
+    eventosPorDia.push({date: daily[i].date, total: totalDia});
   }
-  var sociosNuevosEstimados = Math.round(eventosPost * FACTOR_CALIBRACION);
-  var sociosActualEst = BASE_FER + sociosNuevosEstimados;
-  var pctAvance = Math.round(100 * sociosActualEst / META_SOCIOS);
-  var ritmoDias = eventosPostDias.slice(-3);
+  var estimadoReal = eventosTotal - NO_SOCIOS_CAMI;
+  var pctAvance = Math.round(100 * eventosTotal / META);
+
+  var ritmoDias = eventosPorDia.slice(-3);
   var eventosRitmo = 0;
-  for (var j = 0; j < ritmoDias.length; j++) eventosRitmo += ritmoDias[j].total;
-  for (var jj = 0; jj < ritmoDias.length; jj++) {
-    if (ritmoDias[jj].date === '2026-09-10') eventosRitmo -= 488;
+  for (var j = 0; j < ritmoDias.length; j++) {
+    var d = ritmoDias[j];
+    var ajuste = 0;
+    if (d.date === '2026-09-10') ajuste = 488;
+    eventosRitmo += Math.max(0, d.total - ajuste);
   }
   var promedioDiario = ritmoDias.length ? eventosRitmo / ritmoDias.length : 0;
-  var sociosRitmoDia = Math.round(promedioDiario * FACTOR_CALIBRACION);
+
   var hoy = daily[daily.length-1].date;
   var msDia = 24*60*60*1000;
   var d1 = new Date(hoy);
   var d2 = new Date(FECHA_CIERRE);
   var diasRestantes = Math.max(0, Math.round((d2-d1)/msDia));
-  var sociosProyectados30sept = sociosActualEst + sociosRitmoDia * diasRestantes;
-  var pctProyeccion = Math.round(100 * sociosProyectados30sept / META_SOCIOS);
+  var eventosProyectados = eventosTotal + Math.round(promedioDiario * diasRestantes);
+  var pctProyeccion = Math.round(100 * eventosProyectados / META);
+
   var nfInt = new Intl.NumberFormat('es-EC', {maximumFractionDigits:0});
   var el = function(id) { return document.getElementById(id); };
-  if (el('cm-soc-val')) el('cm-soc-val').innerHTML = nfInt.format(sociosActualEst);
-  if (el('cm-soc-ctx')) el('cm-soc-ctx').textContent = pctAvance + '% de la meta · proyección al 30-sept ' + pctProyeccion + '% · ' + sociosRitmoDia + ' socios/día';
+  if (el('cm-soc-val')) el('cm-soc-val').innerHTML = nfInt.format(eventosTotal);
+  if (el('cm-soc-subnote')) el('cm-soc-subnote').textContent =
+      'estimado socios reales: ' + nfInt.format(estimadoReal) +
+      ' · restando ' + nfInt.format(NO_SOCIOS_CAMI) + ' no-socios (análisis Cami 11-sept)';
+  if (el('cm-soc-ctx')) el('cm-soc-ctx').textContent =
+      pctAvance + '% de la meta · proyección al 30-sept ' + pctProyeccion + '% · ' + Math.round(promedioDiario) + ' leads/día';
   if (el('cm-soc-fill')) el('cm-soc-fill').style.width = Math.min(pctAvance, 100) + '%';
-  if (el('cm-soc-conf')) el('cm-soc-conf').textContent = nfInt.format(sociosActualEst);
+  if (el('cm-soc-conf')) el('cm-soc-conf').textContent = nfInt.format(eventosTotal);
   if (el('cm-soc-adv')) el('cm-soc-adv').textContent = pctAvance + '%';
-  if (el('cm-soc-proj')) el('cm-soc-proj').textContent = nfInt.format(sociosProyectados30sept);
+  if (el('cm-soc-proj')) el('cm-soc-proj').textContent = nfInt.format(eventosProyectados);
   if (el('cm-soc-pctclose')) el('cm-soc-pctclose').textContent = pctProyeccion + '%';
 })();
 
