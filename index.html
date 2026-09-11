@@ -488,17 +488,6 @@
       </div>
     </div>
   
-    <div class="hero-tile total">
-      <div class="tile-label">Leads totales · 53d</div>
-      <div class="tile-hero-value">4.257</div>
-      <div class="tile-context">1.981 paid · 2.276 propios</div>
-      <div class="tile-delta flat">— · vs. período comparado</div>
-      <div class="tile-sparkline"><svg viewBox="0 0 220 36" preserveAspectRatio="none" style="width:100%;height:36px"><path d="M 2,33.317697228144986 L 10,33.317697228144986 L 18,33.45415778251599 L 26,33.6588486140725 L 34,33.18123667377399 L 42,29.769722814498934 L 50,2 L 58,13.189765458422176 L 66,17.14712153518124 L 74,22.810234541577827 L 82,25.812366737739872 L 90,20.42217484008529 L 98,22.810234541577827 L 106,23.01492537313433 L 114,15.98720682302772 L 122,14.349680170575692 L 130,23.901918976545844 L 138,28.746268656716417 L 146,28.541577825159916 L 154,17.761194029850746 L 162,20.285714285714285 L 170,23.01492537313433 L 178,22.264392324093816 L 186,26.83582089552239 L 194,29.633262260127932 L 202,29.087420042643924 L 210,24.720682302771856 L 218,31.54371002132196 L 218,34 L 2,34 Z" fill="#003D7A" fill-opacity="0.1"></path><path d="M 2,33.317697228144986 L 10,33.317697228144986 L 18,33.45415778251599 L 26,33.6588486140725 L 34,33.18123667377399 L 42,29.769722814498934 L 50,2 L 58,13.189765458422176 L 66,17.14712153518124 L 74,22.810234541577827 L 82,25.812366737739872 L 90,20.42217484008529 L 98,22.810234541577827 L 106,23.01492537313433 L 114,15.98720682302772 L 122,14.349680170575692 L 130,23.901918976545844 L 138,28.746268656716417 L 146,28.541577825159916 L 154,17.761194029850746 L 162,20.285714285714285 L 170,23.01492537313433 L 178,22.264392324093816 L 186,26.83582089552239 L 194,29.633262260127932 L 202,29.087420042643924 L 210,24.720682302771856 L 218,31.54371002132196" fill="none" stroke="#003D7A" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"></path></svg></div>
-      <div class="tile-kpis">
-        <div class="kpi-mini"><div class="k">Meta</div><div class="v">795</div></div><div class="kpi-mini"><div class="k">Google</div><div class="v">1.179</div></div><div class="kpi-mini"><div class="k">Propios</div><div class="v">2.276</div></div><div class="kpi-mini"><div class="k">Total paid</div><div class="v">1.981</div></div><div class="kpi-mini"><div class="k">Hoy</div><div class="v">136</div></div><div class="kpi-mini"><div class="k">Prom/día</div><div class="v">80</div></div>
-      </div>
-    </div>
-  
     <div class="hero-tile owned">
       <div class="tile-label">Paid vs Propios · 53d</div>
       <div class="tile-hero-value">47<span class="suffix">%</span></div>
@@ -1107,19 +1096,6 @@ function renderHero(A, B, days) {
         { k: 'CVR', v: fmt(googleCVR, 2) + '%' },
         { k: 'CPL', v: '$' + fmt(googleCPL, 0) },
         { k: 'Clicks', v: fmt(A.google.clicks) },
-      ]
-    },
-    { cls: 'total', label: `Leads totales · ${A.days}d`, value: fmt(A.totalLeads),
-      context: `${fmt(A.paidLeads)} paid · ${fmt(A.ownedLeads)} propios`,
-      delta: delta(A.totalLeads, B.totalLeads), deltaLabel: 'vs. período comparado',
-      spark: last28.map(d => valueForDay(d, 'total_leads')), sparkColor: '#003D7A',
-      kpis: [
-        { k: 'Meta', v: fmt(A.metaLeadsGA4) },
-        { k: 'Google', v: fmt(A.googleLeadsGA4) },
-        { k: 'Propios', v: fmt(A.ownedLeads) },
-        { k: 'Total paid', v: fmt(A.paidLeads) },
-        { k: 'Hoy', v: fmt(days.length ? valueForDay(days[days.length-1], 'total_leads') : 0) },
-        { k: 'Prom/día', v: fmt(A.totalLeads / (A.days || 1), 0) },
       ]
     },
     { cls: 'owned', label: `Paid vs Propios · ${A.days}d`, value: paidRatio.toFixed(0), suffix: '%',
