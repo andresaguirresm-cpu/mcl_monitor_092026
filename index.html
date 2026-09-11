@@ -330,6 +330,14 @@
   .hero-tile.campaign-inversion { border-top: 2px solid #003D7A; }
   .hero-tile.campaign-socios { border-top: 2px solid #00B8E6; }
   .hero-tile.audiencia-google { border-top: 2px solid #00B8E6; }
+  /* Vista rapida: hero-tiles centrado, 3 columnas */
+  #hero-tiles { grid-template-columns: repeat(3, 1fr); justify-items: stretch; }
+  @media (max-width: 1100px) { #hero-tiles { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 780px) { #hero-tiles { grid-template-columns: 1fr; } }
+  /* Meta y Google: 5 columnas de KPIs para mostrar hoy vs promedio */
+  #hero-tiles .hero-tile:not(.owned) .tile-kpis { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  #hero-tiles .hero-tile:not(.owned) .kpi-mini .v { font-size: 12px; }
+  #hero-tiles .hero-tile:not(.owned) .kpi-mini .k { font-size: 8px; }
   .audiencia-stack { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0 10px; background: rgba(0,0,0,0.06); }
   .aud-clean { background: #00B8E6; height: 100%; }
   .aud-dirty { background: #EF4444; height: 100%; }
@@ -1055,16 +1063,52 @@ function render() {
 }
 
 function renderHero(A, B, days) {
+  // Promedio del periodo
   const metaCPM = A.meta.impressions ? A.meta.spend / (A.meta.impressions / 1000) : 0;
   const metaCPC = A.meta.clicks ? A.meta.spend / A.meta.clicks : 0;
   const metaCTR = A.meta.impressions ? A.meta.clicks / A.meta.impressions * 100 : 0;
-  const metaFreq = A.meta.reach ? A.meta.impressions / A.meta.reach : 0;
+  const metaCVR = A.meta.clicks ? A.metaLeadsGA4 / A.meta.clicks * 100 : 0;
   const metaCPL = A.metaLeadsGA4 ? A.meta.spend / A.metaLeadsGA4 : 0;
   const googleCPM = A.google.impressions ? A.google.total_cost / (A.google.impressions / 1000) : 0;
   const googleCPC = A.google.clicks ? A.google.total_cost / A.google.clicks : 0;
   const googleCTR = A.google.impressions ? A.google.clicks / A.google.impressions * 100 : 0;
   const googleCVR = A.google.clicks ? A.googleLeadsGA4 / A.google.clicks * 100 : 0;
   const googleCPL = A.googleLeadsGA4 ? A.google.total_cost / A.googleLeadsGA4 : 0;
+
+  // Metricas HOY (ultimo dia del periodo filtrado)
+  const hoyDay = days.length ? days[days.length - 1] : null;
+  const hoyMeta = hoyDay ? (function() {
+    let s=0, i=0, c=0, r=0;
+    if (hoyDay.meta) {
+      for (const et in hoyDay.meta) for (const fm in hoyDay.meta[et]) {
+        const x = hoyDay.meta[et][fm];
+        s += x.spend||0; i += x.impr||0; c += x.clicks||0; r += x.reach||0;
+      }
+    }
+    const leads = valueForDay(hoyDay, 'meta_leads_ga4');
+    return {
+      cpm: i ? s/(i/1000) : 0,
+      cpc: c ? s/c : 0,
+      ctr: i ? c/i*100 : 0,
+      cvr: c ? leads/c*100 : 0,
+      cpl: leads ? s/leads : 0,
+    };
+  })() : {cpm:0,cpc:0,ctr:0,cvr:0,cpl:0};
+  const hoyGoogle = hoyDay ? (function() {
+    const g = hoyDay.google_ads || {};
+    const cost = (g.clean_cost||0) + (g.dirty_cost||0);
+    const impr = (g.clean_impr||0) + (g.dirty_impr||0);
+    const clk = (g.clean_clicks||0) + (g.dirty_clicks||0);
+    const leads = valueForDay(hoyDay, 'google_leads_ga4');
+    return {
+      cpm: impr ? cost/(impr/1000) : 0,
+      cpc: clk ? cost/clk : 0,
+      ctr: impr ? clk/impr*100 : 0,
+      cvr: clk ? leads/clk*100 : 0,
+      cpl: leads ? cost/leads : 0,
+    };
+  })() : {cpm:0,cpc:0,ctr:0,cvr:0,cpl:0};
+
   const last28 = DATA.daily.slice(-28);
   // Ratio limpio: paid vs propios dentro del universo paid+owned (los % suman 100 con los números que se ven)
   const paidPlusOwned = A.paidLeads + A.ownedLeads;
@@ -1077,12 +1121,16 @@ function renderHero(A, B, days) {
       delta: delta(A.metaLeadsGA4, B.metaLeadsGA4), deltaLabel: 'leads vs. período comparado',
       spark: last28.map(d => valueForDay(d, 'meta_leads_ga4')), sparkColor: '#003D7A',
       kpis: [
-        { k: 'CPM', v: '$' + fmt(metaCPM, 2) },
-        { k: 'CPC', v: '$' + fmt(metaCPC, 2) },
-        { k: 'CTR', v: fmt(metaCTR, 2) + '%' },
-        { k: 'Freq', v: fmt(metaFreq, 1) + 'x' },
-        { k: 'CPL', v: '$' + fmt(metaCPL, 0) },
-        { k: 'Reach', v: fmt(A.meta.reach / 1000, 0) + 'K' },
+        { k: 'CPM hoy', v: '$' + fmt(hoyMeta.cpm, 2) },
+        { k: 'CPC hoy', v: '$' + fmt(hoyMeta.cpc, 2) },
+        { k: 'CTR hoy', v: fmt(hoyMeta.ctr, 2) + '%' },
+        { k: 'CVR hoy', v: fmt(hoyMeta.cvr, 2) + '%' },
+        { k: 'CPL hoy', v: '$' + fmt(hoyMeta.cpl, 0) },
+        { k: 'CPM prom', v: '$' + fmt(metaCPM, 2) },
+        { k: 'CPC prom', v: '$' + fmt(metaCPC, 2) },
+        { k: 'CTR prom', v: fmt(metaCTR, 2) + '%' },
+        { k: 'CVR prom', v: fmt(metaCVR, 2) + '%' },
+        { k: 'CPL prom', v: '$' + fmt(metaCPL, 0) },
       ]
     },
     { cls: 'google', label: `Google · ${A.days}d`, value: fmt(A.googleLeadsGA4),
@@ -1090,12 +1138,16 @@ function renderHero(A, B, days) {
       delta: delta(A.googleLeadsGA4, B.googleLeadsGA4), deltaLabel: 'leads vs. período comparado',
       spark: last28.map(d => valueForDay(d, 'google_leads_ga4')), sparkColor: '#00B8E6',
       kpis: [
-        { k: 'CPM', v: '$' + fmt(googleCPM, 2) },
-        { k: 'CPC', v: '$' + fmt(googleCPC, 2) },
-        { k: 'CTR', v: fmt(googleCTR, 2) + '%' },
-        { k: 'CVR', v: fmt(googleCVR, 2) + '%' },
-        { k: 'CPL', v: '$' + fmt(googleCPL, 0) },
-        { k: 'Clicks', v: fmt(A.google.clicks) },
+        { k: 'CPM hoy', v: '$' + fmt(hoyGoogle.cpm, 2) },
+        { k: 'CPC hoy', v: '$' + fmt(hoyGoogle.cpc, 2) },
+        { k: 'CTR hoy', v: fmt(hoyGoogle.ctr, 2) + '%' },
+        { k: 'CVR hoy', v: fmt(hoyGoogle.cvr, 2) + '%' },
+        { k: 'CPL hoy', v: '$' + fmt(hoyGoogle.cpl, 0) },
+        { k: 'CPM prom', v: '$' + fmt(googleCPM, 2) },
+        { k: 'CPC prom', v: '$' + fmt(googleCPC, 2) },
+        { k: 'CTR prom', v: fmt(googleCTR, 2) + '%' },
+        { k: 'CVR prom', v: fmt(googleCVR, 2) + '%' },
+        { k: 'CPL prom', v: '$' + fmt(googleCPL, 0) },
       ]
     },
     { cls: 'owned', label: `Paid vs Propios · ${A.days}d`, value: paidRatio.toFixed(0), suffix: '%',
