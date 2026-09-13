@@ -1872,20 +1872,32 @@ renderTrendStrip();
 
   function paint() {
     SOURCES.forEach(src => {
-      const vals = rows.map(r => metric(r, src)).filter(v => v!=null && v>0);
+      // Owned & Organic: siempre pintan leads (ignoran el toggle)
+      const effectiveMode = src.hasCPL ? mode : 'leads';
+      const localMetric = r => {
+        if (effectiveMode==='leads') return src.leads(r);
+        if (effectiveMode==='spend') return src.spend ? src.spend(r) : null;
+        if (effectiveMode==='cpl') {
+          if (!src.spend) return null;
+          const l = src.leads(r), s = src.spend(r);
+          if (!l || !s) return null;
+          return s/l;
+        }
+      };
+      const vals = rows.map(r => localMetric(r)).filter(v => v!=null && v>0);
       let max = Math.max(...vals, 1);
-      if (mode==='cpl' && vals.length>3) {
+      if (effectiveMode==='cpl' && vals.length>3) {
         const sorted = [...vals].sort((a,b)=>a-b);
         max = sorted[Math.floor(sorted.length*0.9)] || max;
       }
       document.querySelectorAll(`.hm-cell[data-src="${src.key}"]`).forEach(cell => {
         const i = +cell.dataset.i;
-        const v = metric(rows[i], src);
+        const v = localMetric(rows[i]);
         cell.classList.remove('empty');
         if (v==null || v===0) { cell.style.background = 'var(--surface-2,#F8F9FB)'; cell.classList.add('empty'); return; }
         const norm = Math.min(v/max, 1);
         const alpha = 0.15 + norm*0.85;
-        if (mode==='cpl') {
+        if (effectiveMode==='cpl') {
           if (norm<0.4) cell.style.background = `rgba(34,197,94,${alpha})`;
           else if (norm<0.75) cell.style.background = `rgba(245,158,11,${alpha})`;
           else cell.style.background = `rgba(239,68,68,${alpha})`;
@@ -1895,11 +1907,19 @@ renderTrendStrip();
       });
       const totEl = document.getElementById('hm-tot-'+src.key);
       if (totEl) {
-        const t = total(src);
-        if (t==null) totEl.textContent = 'sin gasto';
-        else if (mode==='leads') totEl.textContent = t.toLocaleString() + ' leads';
-        else if (mode==='spend') totEl.textContent = fmtUSD(t) + ' total';
-        else if (mode==='cpl') totEl.textContent = 'CPL avg ' + fmtUSD(t);
+        // Total siempre en modo activo si aplica, si no leads
+        const displayMode = src.hasCPL ? mode : 'leads';
+        let t;
+        if (displayMode==='leads') t = rows.reduce((a,r)=>a+src.leads(r), 0);
+        else if (displayMode==='spend') t = src.spend ? rows.reduce((a,r)=>a+src.spend(r), 0) : null;
+        else if (displayMode==='cpl') {
+          if (!src.spend) t = null;
+          else { const l = rows.reduce((a,r)=>a+src.leads(r), 0); const s = rows.reduce((a,r)=>a+src.spend(r), 0); t = l>0 ? s/l : null; }
+        }
+        if (t==null) totEl.textContent = '';
+        else if (displayMode==='leads') totEl.textContent = t.toLocaleString() + ' leads';
+        else if (displayMode==='spend') totEl.textContent = fmtUSD(t) + ' total';
+        else if (displayMode==='cpl') totEl.textContent = 'CPL avg ' + fmtUSD(t);
       }
     });
     const modeLabel = document.getElementById('hm-mode-label');
