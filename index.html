@@ -510,6 +510,56 @@
 </section>
 
 <section>
+  <div class="section-label">Heatmap por día × fuente · 20-ago → hoy</div>
+  <div class="chart-card" style="padding:16px 0 20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px 12px;border-bottom:1px solid var(--hairline,#E1E5EB);margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:12px;font-size:11px;color:var(--ink-mute,#4A5261);letter-spacing:0.06em;text-transform:uppercase">
+        <span id="hm-mode-label">Leads por día</span>
+        <span style="display:inline-flex;gap:2px" id="hm-scale">
+          <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,0.15)"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,0.4)"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,0.65)"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,0.85)"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,1)"></span>
+        </span>
+        <span style="color:var(--ink-dim,#9CA3AF);text-transform:none;letter-spacing:0.02em">escala por fuente</span>
+      </div>
+      <div style="display:inline-flex;background:var(--surface-2,#F8F9FB);border:1px solid var(--hairline,#E1E5EB);border-radius:999px;padding:3px" id="hm-toggle">
+        <button data-hm-mode="leads" class="hm-btn active">LEADS</button>
+        <button data-hm-mode="cpl" class="hm-btn">CPL</button>
+        <button data-hm-mode="spend" class="hm-btn">GASTO</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;padding:0 20px">
+      <div id="hm-months" style="display:grid;grid-template-columns:130px 1fr;gap:10px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--hairline,#E1E5EB);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-mute,#4A5261);font-weight:600"></div>
+      <div id="hm-grid" style="display:grid;grid-template-columns:130px 1fr;gap:10px"></div>
+    </div>
+  </div>
+  <style>
+    #hm-toggle .hm-btn { border:0; background:transparent; color:var(--ink-mute,#4A5261); font-family:inherit; font-size:11px; font-weight:700; padding:6px 14px; border-radius:999px; cursor:pointer; letter-spacing:0.06em; }
+    #hm-toggle .hm-btn.active { background:var(--ink,#14140F); color:#fff; }
+    #hm-toggle .hm-btn:hover:not(.active) { color:var(--ink,#14140F); }
+    .hm-month { border-left:1px solid var(--hairline,#E1E5EB); padding:2px 0 2px 6px; }
+    .hm-row-label { display:flex; flex-direction:column; justify-content:center; padding-left:8px; gap:3px; }
+    .hm-row-label .name { font-family:'Anton','DM Sans',sans-serif; font-size:20px; letter-spacing:0.5px; color:var(--ink,#14140F); line-height:1; }
+    .hm-row-label .total { font-size:10px; color:var(--ink-mute,#4A5261); letter-spacing:0.06em; text-transform:uppercase; font-variant-numeric:tabular-nums; }
+    .hm-cells { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(28px,1fr); grid-template-rows:30px; gap:3px; }
+    .hm-cell { border-radius:3px; background:var(--surface-2,#F8F9FB); cursor:pointer; outline:0 solid transparent; transition:outline 0.08s; }
+    .hm-cell:hover { outline:2px solid var(--ink,#14140F); outline-offset:1px; z-index:2; position:relative; }
+    .hm-cell.empty { opacity:0.35; }
+    .hm-tip { position:fixed; background:#fff; color:var(--ink,#14140F); border:1px solid var(--hairline,#E1E5EB); border-radius:6px; padding:12px 14px; font-size:12px; min-width:220px; box-shadow:0 10px 30px rgba(0,0,0,0.15); pointer-events:none; opacity:0; transform:translateY(-4px); transition:opacity 0.1s,transform 0.1s; z-index:1000; font-variant-numeric:tabular-nums; }
+    .hm-tip.visible { opacity:1; transform:translateY(0); }
+    .hm-tip .date { font-family:'Anton',sans-serif; font-size:18px; letter-spacing:0.5px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--hairline,#E1E5EB); }
+    .hm-tip .src { font-size:10px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; font-weight:600; }
+    .hm-tip .r { display:flex; justify-content:space-between; gap:20px; padding:3px 0; }
+    .hm-tip .k { color:var(--ink-mute,#4A5261); font-size:11px; }
+    .hm-tip .v { font-family:'Anton',sans-serif; font-size:16px; letter-spacing:0.5px; }
+    .hm-tip .v.mono { font-family:'DM Sans',monospace; font-size:12px; font-weight:500; }
+  </style>
+  <div class="hm-tip" id="hm-tip"></div>
+</section>
+
+<section>
   <div class="section-label">Tendencia diaria</div>
   <div class="chart-row">
     <div class="chart-card">
@@ -1737,6 +1787,178 @@ applyPreset('all');
 })();
 
 renderTrendStrip();
+
+/* ========= HEATMAP día × fuente ========= */
+(function(){
+  const rows = (DATA && DATA.daily) ? DATA.daily.filter(r => r.date >= '2026-08-20') : [];
+  if (!rows.length) return;
+
+  function metaSpend(d) {
+    let s = 0;
+    if (d.meta) for (const et of Object.values(d.meta)) for (const f of Object.values(et)) s += f.spend || 0;
+    return s;
+  }
+  function goog(d) {
+    const g = d.google_ads || {};
+    return (g.clean_cost || 0) + (g.dirty_cost || 0);
+  }
+  function owned(d) {
+    const g = d.ga4 || {};
+    return (g['Salesforce']||0) + (g['WhatsApp']||0) + (g['App Diners']||0) + (g['Email otros']||0);
+  }
+  function organic(d) {
+    const g = d.ga4 || {};
+    return (g['Google Organic']||0) + (g['Instagram Organic']||0) + (g['Directo']||0);
+  }
+
+  const SOURCES = [
+    {key:'meta', name:'Meta Paid', rgb:'0,61,122', leads:d=>(d.ga4||{})['Meta Paid']||0, spend:metaSpend, hasCPL:true},
+    {key:'goog', name:'Google Paid', rgb:'0,184,230', leads:d=>(d.ga4||{})['Google Paid']||0, spend:goog, hasCPL:true},
+    {key:'own', name:'Owned', rgb:'56,189,248', leads:owned, spend:null, hasCPL:false},
+    {key:'org', name:'Organic', rgb:'148,163,184', leads:organic, spend:null, hasCPL:false}
+  ];
+  const MONTHS_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  let mode = 'leads';
+
+  const fmtDate = iso => { const [y,m,d] = iso.split('-'); return `${parseInt(d,10)} ${MONTHS_ES[parseInt(m,10)-1]}`; };
+  const fmtUSD = n => (n==null||isNaN(n)) ? '—' : '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  // Months strip
+  const monthsEl = document.getElementById('hm-months');
+  const groups = [];
+  let cur = null;
+  rows.forEach(r => { const [y,m] = r.date.split('-'); const k = `${y}-${m}`; if (!cur||cur.k!==k){cur={k,label:MONTHS_ES[parseInt(m,10)-1],count:1};groups.push(cur);} else cur.count++; });
+  monthsEl.innerHTML = '<div></div><div style="display:grid;gap:2px;grid-template-columns:' + groups.map(g=>g.count+'fr').join(' ') + '">' + groups.map(g=>`<div class="hm-month">${g.label}.</div>`).join('') + '</div>';
+
+  // Build grid
+  const grid = document.getElementById('hm-grid');
+  SOURCES.forEach(src => {
+    const label = document.createElement('div');
+    label.className = 'hm-row-label';
+    label.innerHTML = `<div class="name">${src.name.toUpperCase()}</div><div class="total" id="hm-tot-${src.key}"></div>`;
+    grid.appendChild(label);
+    const cells = document.createElement('div');
+    cells.className = 'hm-cells';
+    rows.forEach((r,i) => {
+      const c = document.createElement('div');
+      c.className = 'hm-cell';
+      c.dataset.i = i;
+      c.dataset.src = src.key;
+      cells.appendChild(c);
+    });
+    grid.appendChild(cells);
+  });
+
+  function metric(r, src) {
+    if (mode==='leads') return src.leads(r);
+    if (mode==='spend') return src.spend ? src.spend(r) : null;
+    if (mode==='cpl') {
+      if (!src.spend) return null;
+      const l = src.leads(r), s = src.spend(r);
+      if (!l || !s) return null;
+      return s/l;
+    }
+  }
+  function total(src) {
+    if (mode==='leads') return rows.reduce((a,r)=>a+src.leads(r), 0);
+    if (mode==='spend') return src.spend ? rows.reduce((a,r)=>a+src.spend(r), 0) : null;
+    if (mode==='cpl') {
+      if (!src.spend) return null;
+      const l = rows.reduce((a,r)=>a+src.leads(r), 0);
+      const s = rows.reduce((a,r)=>a+src.spend(r), 0);
+      return l>0 ? s/l : null;
+    }
+  }
+
+  function paint() {
+    SOURCES.forEach(src => {
+      const vals = rows.map(r => metric(r, src)).filter(v => v!=null && v>0);
+      let max = Math.max(...vals, 1);
+      if (mode==='cpl' && vals.length>3) {
+        const sorted = [...vals].sort((a,b)=>a-b);
+        max = sorted[Math.floor(sorted.length*0.9)] || max;
+      }
+      document.querySelectorAll(`.hm-cell[data-src="${src.key}"]`).forEach(cell => {
+        const i = +cell.dataset.i;
+        const v = metric(rows[i], src);
+        cell.classList.remove('empty');
+        if (v==null || v===0) { cell.style.background = 'var(--surface-2,#F8F9FB)'; cell.classList.add('empty'); return; }
+        const norm = Math.min(v/max, 1);
+        const alpha = 0.15 + norm*0.85;
+        if (mode==='cpl') {
+          if (norm<0.4) cell.style.background = `rgba(34,197,94,${alpha})`;
+          else if (norm<0.75) cell.style.background = `rgba(245,158,11,${alpha})`;
+          else cell.style.background = `rgba(239,68,68,${alpha})`;
+        } else {
+          cell.style.background = `rgba(${src.rgb},${alpha})`;
+        }
+      });
+      const totEl = document.getElementById('hm-tot-'+src.key);
+      if (totEl) {
+        const t = total(src);
+        if (t==null) totEl.textContent = 'sin gasto';
+        else if (mode==='leads') totEl.textContent = t.toLocaleString() + ' leads';
+        else if (mode==='spend') totEl.textContent = fmtUSD(t) + ' total';
+        else if (mode==='cpl') totEl.textContent = 'CPL avg ' + fmtUSD(t);
+      }
+    });
+    const modeLabel = document.getElementById('hm-mode-label');
+    const scale = document.getElementById('hm-scale');
+    if (mode==='leads') {
+      modeLabel.textContent = 'Leads por día';
+      scale.innerHTML = [0.15,0.4,0.65,0.85,1].map(a=>`<span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,${a})"></span>`).join('');
+    } else if (mode==='spend') {
+      modeLabel.textContent = 'Gasto por día';
+      scale.innerHTML = [0.15,0.4,0.65,0.85,1].map(a=>`<span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,${a})"></span>`).join('');
+    } else {
+      modeLabel.textContent = 'CPL por día · verde bajo / rojo alto';
+      scale.innerHTML = `
+        <span style="width:12px;height:12px;border-radius:2px;background:rgba(34,197,94,0.85)"></span>
+        <span style="width:12px;height:12px;border-radius:2px;background:rgba(34,197,94,0.5)"></span>
+        <span style="width:12px;height:12px;border-radius:2px;background:rgba(245,158,11,0.7)"></span>
+        <span style="width:12px;height:12px;border-radius:2px;background:rgba(239,68,68,0.7)"></span>
+        <span style="width:12px;height:12px;border-radius:2px;background:rgba(239,68,68,1)"></span>`;
+    }
+  }
+
+  const tip = document.getElementById('hm-tip');
+  document.querySelectorAll('.hm-cell').forEach(cell => {
+    cell.addEventListener('mouseenter', () => {
+      const i = +cell.dataset.i;
+      const src = SOURCES.find(s => s.key === cell.dataset.src);
+      const r = rows[i];
+      const leads = src.leads(r);
+      const spend = src.spend ? src.spend(r) : null;
+      const cpl = (spend!=null && leads>0 && spend>0) ? spend/leads : null;
+      const primary = mode==='leads' ? leads : (mode==='cpl' ? cpl : spend);
+      const lbl = mode==='leads' ? 'Leads' : (mode==='cpl' ? 'CPL' : 'Gasto');
+      tip.innerHTML = `
+        <div class="date">${fmtDate(r.date)}</div>
+        <div class="src" style="color:rgb(${src.rgb})">■ ${src.name}</div>
+        <div class="r"><span class="k">${lbl}</span><span class="v">${primary==null?'—':(mode==='leads'?primary.toLocaleString():fmtUSD(primary))}</span></div>
+        ${mode!=='leads'&&leads>0?`<div class="r"><span class="k">Leads</span><span class="v mono">${leads.toLocaleString()}</span></div>`:''}
+        ${mode!=='spend'&&spend!=null&&spend>0?`<div class="r"><span class="k">Gasto</span><span class="v mono">${fmtUSD(spend)}</span></div>`:''}
+        ${mode!=='cpl'&&cpl!=null?`<div class="r"><span class="k">CPL</span><span class="v mono">${fmtUSD(cpl)}</span></div>`:''}
+      `;
+      tip.classList.add('visible');
+      const rect = cell.getBoundingClientRect();
+      tip.style.left = Math.min(window.innerWidth-260, Math.max(10, rect.left + rect.width/2 - 120)) + 'px';
+      tip.style.top = Math.max(10, rect.top - tip.offsetHeight - 8) + 'px';
+    });
+    cell.addEventListener('mouseleave', () => tip.classList.remove('visible'));
+  });
+
+  document.querySelectorAll('#hm-toggle .hm-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#hm-toggle .hm-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.hmMode;
+      paint();
+    });
+  });
+
+  paint();
+})();
 </script>
 
 
