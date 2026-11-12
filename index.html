@@ -423,7 +423,7 @@
   <div class="section-label">Métricas de campaña · vista general</div>
   <div class="hero-grid" id="campaign-metrics-grid">
     <div class="hero-tile campaign-inversion">
-      <div class="tile-label">Inversión Consideración · pot flow $24.250</div>
+      <div class="tile-label">Pot principal de medios · flow $24.250</div>
       <div class="tile-hero-value" id="cm-inv-pct">58<span class="suffix">%</span></div>
       <div class="tile-context" id="cm-inv-ctx">$14.049 ejecutado flow · $9.451 remanente flow · $750 Merch reservado</div>
       <div class="tile-progress-wrap"><div class="tile-progress-bar"><div class="tile-progress-fill" id="cm-inv-fill" style="width:58%;background:#003D7A"></div></div></div>
@@ -437,18 +437,18 @@
       </div>
     </div>
     <div class="hero-tile campaign-socios">
-      <div class="tile-label">Leads thank-you · meta 20.000</div>
-      <div class="tile-hero-value" id="cm-soc-val">4.783</div>
-      <div class="tile-subnote" id="cm-soc-subnote" style="font-size:11px;color:var(--ink-3);margin-top:-2px;margin-bottom:6px;">estimado socios reales: 3.150 · restando 1.633 no-socios (análisis Cami 11-sept)</div>
-      <div class="tile-context" id="cm-soc-ctx">24% de la meta · proyección al 30-sept 45%</div>
-      <div class="tile-progress-wrap"><div class="tile-progress-bar"><div class="tile-progress-fill" id="cm-soc-fill" style="width:24%;background:#00B8E6"></div></div></div>
+      <div class="tile-label">Cierre GA4 conciliado</div>
+      <div class="tile-hero-value" id="cm-soc-val">13.646</div>
+      <div class="tile-subnote" id="cm-soc-subnote" style="font-size:11px;color:var(--ink-3);margin-top:-2px;margin-bottom:6px;">12.760 sesiones únicas con registro · sin cruce CRM final</div>
+      <div class="tile-context" id="cm-soc-ctx">Eventos COMPLETE_MCLAREN; no equivalen a socios TT MC validados</div>
+      <div class="tile-progress-wrap" style="display:none"><div class="tile-progress-bar"><div class="tile-progress-fill" id="cm-soc-fill" style="width:0;background:#00B8E6"></div></div></div>
       <div class="tile-kpis">
-        <div class="kpi-mini"><div class="k">Leads GA4</div><div class="v" id="cm-soc-conf">4.783</div></div>
-        <div class="kpi-mini"><div class="k">Meta</div><div class="v" id="cm-soc-meta">20.000</div></div>
-        <div class="kpi-mini"><div class="k">Avance</div><div class="v" id="cm-soc-adv">24%</div></div>
-        <div class="kpi-mini"><div class="k">Proyección</div><div class="v" id="cm-soc-proj">9.000</div></div>
-        <div class="kpi-mini"><div class="k">% cierre</div><div class="v" id="cm-soc-pctclose">45%</div></div>
-        <div class="kpi-mini"><div class="k">Ventana</div><div class="v" id="cm-soc-window">17 días</div></div>
+        <div class="kpi-mini"><div class="k">Eventos GA4</div><div class="v" id="cm-soc-conf">13.646</div></div>
+        <div class="kpi-mini"><div class="k">Sesiones únicas</div><div class="v" id="cm-soc-meta">12.760</div></div>
+        <div class="kpi-mini"><div class="k">Atrib. canal</div><div class="v" id="cm-soc-adv">14.041</div></div>
+        <div class="kpi-mini"><div class="k">Meta atrib.</div><div class="v" id="cm-soc-proj">3.423</div></div>
+        <div class="kpi-mini"><div class="k">Google atrib.</div><div class="v" id="cm-soc-pctclose">1.629</div></div>
+        <div class="kpi-mini"><div class="k">Corte</div><div class="v" id="cm-soc-window">30-sept</div></div>
       </div>
     </div>
     <div class="hero-tile audiencia-google">
@@ -514,7 +514,7 @@
   <div class="chart-card" style="padding:16px 0 20px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px 12px;border-bottom:1px solid var(--hairline,#E1E5EB);margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:12px;font-size:11px;color:var(--ink-mute,#4A5261);letter-spacing:0.06em;text-transform:uppercase">
-        <span id="hm-mode-label">Leads por día</span>
+        <span id="hm-mode-label">Atribuciones por día</span>
         <span style="display:inline-flex;gap:2px" id="hm-scale">
           <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,0.15)"></span>
           <span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,0.4)"></span>
@@ -525,7 +525,7 @@
         <span style="color:var(--ink-dim,#9CA3AF);text-transform:none;letter-spacing:0.02em">escala por fuente</span>
       </div>
       <div style="display:inline-flex;background:var(--surface-2,#F8F9FB);border:1px solid var(--hairline,#E1E5EB);border-radius:999px;padding:3px" id="hm-toggle">
-        <button data-hm-mode="leads" class="hm-btn active">LEADS</button>
+        <button data-hm-mode="leads" class="hm-btn active">ATRIB.</button>
         <button data-hm-mode="spend" class="hm-btn">GASTO</button>
       </div>
     </div>
@@ -567,7 +567,7 @@
       <div class="chart-container"><div id="chart-cost"><svg viewBox="0 0 640 220" preserveAspectRatio="none" style="height:220px" id="svg-chart-cost"><line class="grid-line" x1="48" y1="12" x2="624" y2="12"></line><text class="axis-label" x="42" y="15" text-anchor="end">$521</text><line class="grid-line" x1="48" y1="56.5" x2="624" y2="56.5"></line><text class="axis-label" x="42" y="59.5" text-anchor="end">$390</text><line class="grid-line" x1="48" y1="101" x2="624" y2="101"></line><text class="axis-label" x="42" y="104" text-anchor="end">$260</text><line class="grid-line" x1="48" y1="145.5" x2="624" y2="145.5"></line><text class="axis-label" x="42" y="148.5" text-anchor="end">$130</text><line class="grid-line" x1="48" y1="190" x2="624" y2="190"></line><text class="axis-label" x="42" y="193" text-anchor="end">$0</text><line class="marker-line" x1="590.7692307692307" y1="12" x2="590.7692307692307" y2="190"></line><text class="marker-label" x="590.7692307692307" y="10" text-anchor="middle">04-sept</text><path class="curve curve-meta" d="M 48 190 L 59.07692307692308 190 L 70.15384615384616 190 L 81.23076923076923 190 L 92.3076923076923 190 L 103.38461538461539 190 L 114.46153846153847 190 L 125.53846153846153 190 L 136.6153846153846 190 L 147.69230769230768 190 L 158.76923076923077 190 L 169.84615384615384 190 L 180.92307692307693 190 L 192 190 L 203.07692307692307 190 L 214.15384615384613 190 L 225.23076923076923 190 L 236.30769230769232 190 L 247.3846153846154 190 L 258.46153846153845 190 L 269.53846153846155 190 L 280.61538461538464 190 L 291.6923076923077 190 L 302.7692307692308 190 L 313.84615384615387 190 L 324.9230769230769 190 L 336 190 L 347.0769230769231 190 L 358.15384615384613 190 L 369.2307692307692 190 L 380.30769230769226 190 L 391.38461538461536 190 L 402.46153846153845 190 L 413.53846153846155 188.1126030081254 L 424.61538461538464 121.53057108280989 L 435.69230769230774 124.33089379358036 L 446.7692307692308 116.288941393419 L 457.84615384615387 113.67325534489713 L 468.9230769230769 105.9458691100482 L 480 102.08559519007278 L 491.0769230769231 60.40215908872625 L 502.15384615384613 17.68612535776714 L 513.2307692307693 49.94967248698592 L 524.3076923076923 32.12881538254669 L 535.3846153846154 50.31210741658501 L 546.4615384615385 26.217022993142365 L 557.5384615384615 37.50379377245045 L 568.6153846153846 39.35699878983456 L 579.6923076923077 28.77116348758139 L 590.7692307692307 12 L 601.8461538461538 70.89909525730417 L 612.9230769230769 79.2487754278799 L 624 118.70973318734512"></path><path class="curve curve-google" d="M 48 190 L 59.07692307692308 190 L 70.15384615384616 190 L 81.23076923076923 190 L 92.3076923076923 190 L 103.38461538461539 190 L 114.46153846153847 190 L 125.53846153846153 190 L 136.6153846153846 190 L 147.69230769230768 190 L 158.76923076923077 190 L 169.84615384615384 190 L 180.92307692307693 190 L 192 190 L 203.07692307692307 190 L 214.15384615384613 190 L 225.23076923076923 190 L 236.30769230769232 190 L 247.3846153846154 190 L 258.46153846153845 190 L 269.53846153846155 190 L 280.61538461538464 190 L 291.6923076923077 190 L 302.7692307692308 190 L 313.84615384615387 190 L 324.9230769230769 190 L 336 190 L 347.0769230769231 190 L 358.15384615384613 190 L 369.2307692307692 190 L 380.30769230769226 190 L 391.38461538461536 190 L 402.46153846153845 190 L 413.53846153846155 190 L 424.61538461538464 179.49622543652396 L 435.69230769230774 172.24068844964367 L 446.7692307692308 173.61520582416105 L 457.84615384615387 171.9945062333122 L 468.9230769230769 172.09024376188555 L 480 172.17572369811177 L 491.0769230769231 173.63914020630438 L 502.15384615384613 171.980829443516 L 513.2307692307693 172.30223400372654 L 524.3076923076923 172.04579419504793 L 535.3846153846154 172.06289018229316 L 546.4615384615385 172.30223400372654 L 557.5384615384615 172.23726925219464 L 568.6153846153846 172.33300678076796 L 579.6923076923077 172.264622831787 L 590.7692307692307 173.5707562573234 L 601.8461538461538 173.87848402773776 L 612.9230769230769 172.02185981290458 L 624 170.87300947002439"></path><line class="crosshair" id="cx-chart-cost" x1="0" y1="12" x2="0" y2="190"></line><circle class="cross-dot cross-dot-0" r="4" fill="#FFFFFF" stroke-width="2" stroke="#003D7A"></circle><circle class="cross-dot cross-dot-1" r="4" fill="#FFFFFF" stroke-width="2" stroke="#00B8E6"></circle><text class="axis-label" x="48" y="210" text-anchor="middle">07-17</text><text class="axis-label" x="136.6153846153846" y="210" text-anchor="middle">07-25</text><text class="axis-label" x="225.23076923076923" y="210" text-anchor="middle">08-02</text><text class="axis-label" x="313.84615384615387" y="210" text-anchor="middle">08-10</text><text class="axis-label" x="402.46153846153845" y="210" text-anchor="middle">08-18</text><text class="axis-label" x="491.0769230769231" y="210" text-anchor="middle">08-26</text><text class="axis-label" x="579.6923076923077" y="210" text-anchor="middle">09-03</text><text class="axis-label" x="624" y="210" text-anchor="middle">09-07</text><rect x="48" y="12" width="576" height="178" fill="transparent" pointer-events="all" id="hover-chart-cost"></rect></svg></div><div class="tooltip" id="tt-cost"></div></div>
     </div>
     <div class="chart-card">
-      <div class="chart-header"><span class="chart-title">Leads / día</span><span class="chart-subtitle">COMPLETE_MCLAREN por plataforma (GA4)</span></div>
+      <div class="chart-header"><span class="chart-title">Atribuciones / día</span><span class="chart-subtitle">Sesiones con COMPLETE_MCLAREN por canal (GA4)</span></div>
       <div class="chart-legend" id="leads-legend"><span class="legend-item"><span class="legend-dot" style="background:#003D7A"></span>Meta</span><span class="legend-item"><span class="legend-dot" style="background:#00B8E6"></span>Google</span><span class="legend-item"><span class="legend-dot" style="background:#38BDF8"></span>Propios</span><span class="legend-item"><span class="legend-dot" style="background:#14140F"></span>Total</span></div>
       <div class="chart-container"><div id="chart-leads"><svg viewBox="0 0 640 220" preserveAspectRatio="none" style="height:220px" id="svg-chart-leads"><line class="grid-line" x1="48" y1="12" x2="624" y2="12"></line><text class="axis-label" x="42" y="15" text-anchor="end">469</text><line class="grid-line" x1="48" y1="56.5" x2="624" y2="56.5"></line><text class="axis-label" x="42" y="59.5" text-anchor="end">352</text><line class="grid-line" x1="48" y1="101" x2="624" y2="101"></line><text class="axis-label" x="42" y="104" text-anchor="end">235</text><line class="grid-line" x1="48" y1="145.5" x2="624" y2="145.5"></line><text class="axis-label" x="42" y="148.5" text-anchor="end">117</text><line class="grid-line" x1="48" y1="190" x2="624" y2="190"></line><text class="axis-label" x="42" y="193" text-anchor="end">0</text><line class="marker-line" x1="590.7692307692307" y1="12" x2="590.7692307692307" y2="190"></line><text class="marker-label" x="590.7692307692307" y="10" text-anchor="middle">04-sept</text><path class="curve curve-meta" d="M 48 188.86140724946696 L 59.07692307692308 188.86140724946696 L 70.15384615384616 190 L 81.23076923076923 187.34328358208955 L 92.3076923076923 189.2409381663113 L 103.38461538461539 188.86140724946696 L 114.46153846153847 189.62046908315565 L 125.53846153846153 189.62046908315565 L 136.6153846153846 189.62046908315565 L 147.69230769230768 188.86140724946696 L 158.76923076923077 189.2409381663113 L 169.84615384615384 189.2409381663113 L 180.92307692307693 188.86140724946696 L 192 189.62046908315565 L 203.07692307692307 189.2409381663113 L 214.15384615384613 190 L 225.23076923076923 188.86140724946696 L 236.30769230769232 190 L 247.3846153846154 183.92750533049042 L 258.46153846153845 184.30703624733476 L 269.53846153846155 185.82515991471215 L 280.61538461538464 187.7228144989339 L 291.6923076923077 188.10234541577825 L 302.7692307692308 188.10234541577825 L 313.84615384615387 188.10234541577825 L 324.9230769230769 188.4818763326226 L 336 189.2409381663113 L 347.0769230769231 189.2409381663113 L 358.15384615384613 189.2409381663113 L 369.2307692307692 189.2409381663113 L 380.30769230769226 189.62046908315565 L 391.38461538461536 190 L 402.46153846153845 189.62046908315565 L 413.53846153846155 188.86140724946696 L 424.61538461538464 128.136460554371 L 435.69230769230774 161.9147121535181 L 446.7692307692308 166.4690831556503 L 457.84615384615387 166.84861407249468 L 468.9230769230769 172.16204690831557 L 480 177.47547974413646 L 491.0769230769231 171.7825159914712 L 502.15384615384613 175.5778251599147 L 513.2307692307693 184.6865671641791 L 524.3076923076923 183.92750533049042 L 535.3846153846154 185.4456289978678 L 546.4615384615385 185.06609808102345 L 557.5384615384615 185.4456289978678 L 568.6153846153846 186.2046908315565 L 579.6923076923077 185.82515991471215 L 590.7692307692307 185.82515991471215 L 601.8461538461538 183.54797441364605 L 612.9230769230769 181.65031982942432 L 624 184.6865671641791"></path><path class="curve curve-google" d="M 48 189.2409381663113 L 59.07692307692308 189.2409381663113 L 70.15384615384616 188.86140724946696 L 81.23076923076923 187.7228144989339 L 92.3076923076923 188.86140724946696 L 103.38461538461539 189.2409381663113 L 114.46153846153847 190 L 125.53846153846153 188.86140724946696 L 136.6153846153846 189.62046908315565 L 147.69230769230768 190 L 158.76923076923077 189.62046908315565 L 169.84615384615384 189.62046908315565 L 180.92307692307693 189.2409381663113 L 192 189.62046908315565 L 203.07692307692307 190 L 214.15384615384613 188.4818763326226 L 225.23076923076923 189.62046908315565 L 236.30769230769232 189.2409381663113 L 247.3846153846154 189.62046908315565 L 258.46153846153845 188.4818763326226 L 269.53846153846155 188.86140724946696 L 280.61538461538464 190 L 291.6923076923077 189.62046908315565 L 302.7692307692308 188.86140724946696 L 313.84615384615387 189.62046908315565 L 324.9230769230769 189.62046908315565 L 336 189.62046908315565 L 347.0769230769231 189.62046908315565 L 358.15384615384613 189.2409381663113 L 369.2307692307692 189.2409381663113 L 380.30769230769226 188.10234541577825 L 391.38461538461536 186.2046908315565 L 402.46153846153845 178.6140724946695 L 413.53846153846155 182.409381663113 L 424.61538461538464 186.58422174840086 L 435.69230769230774 183.1684434968017 L 446.7692307692308 182.78891257995735 L 457.84615384615387 166.84861407249468 L 468.9230769230769 167.22814498933903 L 480 163.05330490405117 L 491.0769230769231 164.95095948827293 L 502.15384615384613 151.28784648187633 L 513.2307692307693 161.15565031982942 L 524.3076923076923 175.95735607675905 L 535.3846153846154 173.68017057569296 L 546.4615384615385 153.94456289978677 L 557.5384615384615 161.15565031982942 L 568.6153846153846 167.98720682302772 L 579.6923076923077 156.22174840085287 L 590.7692307692307 169.50533049040513 L 601.8461538461538 180.8912579957356 L 612.9230769230769 178.6140724946695 L 624 162.67377398720683"></path><path class="curve curve-owned" d="M 48 185.82515991471215 L 59.07692307692308 186.9637526652452 L 70.15384615384616 187.34328358208955 L 81.23076923076923 185.82515991471215 L 92.3076923076923 187.34328358208955 L 103.38461538461539 185.4456289978678 L 114.46153846153847 186.2046908315565 L 125.53846153846153 186.9637526652452 L 136.6153846153846 188.10234541577825 L 147.69230769230768 189.2409381663113 L 158.76923076923077 188.10234541577825 L 169.84615384615384 188.10234541577825 L 180.92307692307693 189.2409381663113 L 192 186.58422174840086 L 203.07692307692307 188.86140724946696 L 214.15384615384613 189.2409381663113 L 225.23076923076923 187.34328358208955 L 236.30769230769232 188.10234541577825 L 247.3846153846154 188.10234541577825 L 258.46153846153845 185.4456289978678 L 269.53846153846155 186.2046908315565 L 280.61538461538464 189.2409381663113 L 291.6923076923077 189.62046908315565 L 302.7692307692308 188.10234541577825 L 313.84615384615387 189.62046908315565 L 324.9230769230769 187.7228144989339 L 336 187.34328358208955 L 347.0769230769231 187.34328358208955 L 358.15384615384613 188.4818763326226 L 369.2307692307692 189.62046908315565 L 380.30769230769226 187.7228144989339 L 391.38461538461536 170.64392324093816 L 402.46153846153845 24.14498933901919 L 413.53846153846155 82.97228144989339 L 424.61538461538464 161.53518123667376 L 435.69230769230774 162.67377398720683 L 446.7692307692308 175.19829424307036 L 457.84615384615387 160.77611940298507 L 468.9230769230769 168.36673773987206 L 480 168.7462686567164 L 491.0769230769231 133.07036247334753 L 502.15384615384613 133.82942430703625 L 513.2307692307693 167.98720682302772 L 524.3076923076923 180.8912579957356 L 535.3846153846154 180.51172707889125 L 546.4615384615385 140.66098081023455 L 557.5384615384615 147.8720682302772 L 568.6153846153846 154.70362473347546 L 579.6923076923077 162.67377398720683 L 590.7692307692307 174.81876332622602 L 601.8461538461538 181.27078891257995 L 612.9230769230769 182.409381663113 L 624 171.0234541577825"></path><path class="curve curve-total" d="M 48 183.92750533049042 L 59.07692307692308 184.6865671641791 L 70.15384615384616 186.2046908315565 L 81.23076923076923 180.8912579957356 L 92.3076923076923 185.4456289978678 L 103.38461538461539 183.54797441364605 L 114.46153846153847 185.82515991471215 L 125.53846153846153 185.4456289978678 L 136.6153846153846 187.34328358208955 L 147.69230769230768 188.10234541577825 L 158.76923076923077 186.9637526652452 L 169.84615384615384 186.9637526652452 L 180.92307692307693 187.34328358208955 L 192 185.4456289978678 L 203.07692307692307 188.10234541577825 L 214.15384615384613 187.7228144989339 L 225.23076923076923 185.82515991471215 L 236.30769230769232 187.34328358208955 L 247.3846153846154 181.65031982942432 L 258.46153846153845 178.23454157782515 L 269.53846153846155 180.8912579957356 L 280.61538461538464 186.9637526652452 L 291.6923076923077 187.34328358208955 L 302.7692307692308 185.06609808102345 L 313.84615384615387 187.34328358208955 L 324.9230769230769 185.82515991471215 L 336 186.2046908315565 L 347.0769230769231 186.2046908315565 L 358.15384615384613 186.9637526652452 L 369.2307692307692 188.10234541577825 L 380.30769230769226 185.4456289978678 L 391.38461538461536 166.4690831556503 L 402.46153846153845 12 L 413.53846153846155 74.24307036247336 L 424.61538461538464 96.25586353944564 L 435.69230769230774 127.75692963752665 L 446.7692307692308 144.45628997867803 L 457.84615384615387 114.47334754797441 L 468.9230769230769 127.75692963752665 L 480 128.8955223880597 L 491.0769230769231 89.80383795309169 L 502.15384615384613 80.69509594882729 L 513.2307692307693 133.82942430703625 L 524.3076923076923 160.77611940298507 L 535.3846153846154 159.63752665245204 L 546.4615384615385 99.67164179104478 L 557.5384615384615 113.71428571428572 L 568.6153846153846 128.8955223880597 L 579.6923076923077 124.72068230277185 L 590.7692307692307 150.14925373134326 L 601.8461538461538 165.71002132196162 L 612.9230769230769 162.67377398720683 L 624 138.38379530916845"></path><line class="crosshair" id="cx-chart-leads" x1="0" y1="12" x2="0" y2="190"></line><circle class="cross-dot cross-dot-0" r="4" fill="#FFFFFF" stroke-width="2" stroke="#003D7A"></circle><circle class="cross-dot cross-dot-1" r="4" fill="#FFFFFF" stroke-width="2" stroke="#00B8E6"></circle><circle class="cross-dot cross-dot-2" r="4" fill="#FFFFFF" stroke-width="2" stroke="#38BDF8"></circle><circle class="cross-dot cross-dot-3" r="4" fill="#FFFFFF" stroke-width="2" stroke="#14140F"></circle><text class="axis-label" x="48" y="210" text-anchor="middle">07-17</text><text class="axis-label" x="136.6153846153846" y="210" text-anchor="middle">07-25</text><text class="axis-label" x="225.23076923076923" y="210" text-anchor="middle">08-02</text><text class="axis-label" x="313.84615384615387" y="210" text-anchor="middle">08-10</text><text class="axis-label" x="402.46153846153845" y="210" text-anchor="middle">08-18</text><text class="axis-label" x="491.0769230769231" y="210" text-anchor="middle">08-26</text><text class="axis-label" x="579.6923076923077" y="210" text-anchor="middle">09-03</text><text class="axis-label" x="624" y="210" text-anchor="middle">09-07</text><rect x="48" y="12" width="576" height="178" fill="transparent" pointer-events="all" id="hover-chart-leads"></rect></svg></div><div class="tooltip" id="tt-leads"></div></div>
     </div>
@@ -596,7 +596,7 @@
       <thead>
         <tr>
           <th>Plataforma</th><th>Gasto</th><th>Impresiones</th><th>Clicks</th>
-          <th>Leads GA4</th><th>CPM</th><th>CPC</th><th>CTR</th><th>CVR</th><th>CPL</th><th>Freq</th>
+          <th>Atrib. GA4</th><th>CPM</th><th>CPC</th><th>CTR</th><th>CVR</th><th>CPL</th><th>Freq</th>
         </tr>
       </thead>
       <tbody>
@@ -635,7 +635,7 @@
 <section>
   <div class="chart-row">
     <div class="chart-card">
-      <div class="chart-header"><span class="chart-title">Mix por fuente</span><span class="chart-subtitle">% del total de leads COMPLETE_MCLAREN en el rango</span></div>
+      <div class="chart-header"><span class="chart-title">Mix por fuente</span><span class="chart-subtitle">Participación sobre atribuciones por canal · no equivale al total único GA4</span></div>
       <div id="mix-list">
     <div class="mix-row">
       <div class="mix-label"><span class="mix-dot" style="background:#00B8E6"></span>Google Paid</div>
@@ -832,6 +832,16 @@ document.getElementById('ts-range').textContent = `${DATA.date_min} → ${DATA.d
 var _hr = document.getElementById('ts-range-hero'); if (_hr) _hr.textContent = `${DATA.date_min} → ${DATA.date_max}`;
 document.getElementById('ts-meta-snap').textContent = DATA.meta_snapshot_date;
 document.getElementById('ts-meta-snap-modal').textContent = DATA.meta_snapshot_date;
+
+// Reconcile the close entry with the final GA4 event total. Source rows are
+// channel attributions and can exceed the unique campaign outcome.
+var _closeEntry = (DATA.bitacora || []).find(function(x) {
+  return x.date === '2026-09-30' && /Cierre de campaña/.test(x.title || '');
+});
+if (_closeEntry) {
+  _closeEntry.title = 'Cierre de campaña: 13.646 eventos GA4';
+  _closeEntry.body = 'La campaña terminó el 30-sept a las 23h con 13.646 eventos clave COMPLETE_MCLAREN y 12.760 sesiones únicas con registro. El desglose por fuente suma 14.041 atribuciones porque una sesión puede participar en más de un canal; por eso no se utiliza como total de campaña. Sin cruce CRM final, estos resultados no equivalen a socios TT MC validados. Inversión: Consideración ejecutó el 95% de su presupuesto y el total aprobado de $24.250 cerró en 92%. La línea de Merch Fidelización no se activó.';
+}
 
 const overrides = JSON.parse(localStorage.getItem('mcl_overrides') || '{}');
 const STATE = {
@@ -1166,9 +1176,9 @@ function renderHero(A, B, days) {
   const paidRatio = paidPlusOwned ? A.paidLeads / paidPlusOwned * 100 : 0;
   const paidRatioB = paidPlusOwnedB ? B.paidLeads / paidPlusOwnedB * 100 : 0;
   const tiles = [
-    { cls: '', label: `Meta · ${A.days}d`, value: fmt(A.metaLeadsGA4),
+    { cls: '', label: `Meta atrib. · ${A.days}d`, value: fmt(A.metaLeadsGA4),
       context: `$${fmt(A.meta.spend, 0)} invertidos · ${fmt(A.meta.impressions / 1000, 0)}K imp`,
-      delta: delta(A.metaLeadsGA4, B.metaLeadsGA4), deltaLabel: 'leads vs. período comparado',
+      delta: delta(A.metaLeadsGA4, B.metaLeadsGA4), deltaLabel: 'atribuciones vs. período comparado',
       spark: last28.map(d => valueForDay(d, 'meta_leads_ga4')), sparkColor: '#003D7A',
       kpis: [
         { k: 'CPM hoy', v: '$' + fmt(hoyMeta.cpm, 2) },
@@ -1183,9 +1193,9 @@ function renderHero(A, B, days) {
         { k: 'CPL prom', v: '$' + fmt(metaCPL, 0) },
       ]
     },
-    { cls: 'google', label: `Google · ${A.days}d`, value: fmt(A.googleLeadsGA4),
+    { cls: 'google', label: `Google atrib. · ${A.days}d`, value: fmt(A.googleLeadsGA4),
       context: `$${fmt(A.google.total_cost, 0)} invertidos · ${fmt(A.google.impressions / 1000, 0)}K imp`,
-      delta: delta(A.googleLeadsGA4, B.googleLeadsGA4), deltaLabel: 'leads vs. período comparado',
+      delta: delta(A.googleLeadsGA4, B.googleLeadsGA4), deltaLabel: 'atribuciones vs. período comparado',
       spark: last28.map(d => valueForDay(d, 'google_leads_ga4')), sparkColor: '#00B8E6',
       kpis: [
         { k: 'CPM hoy', v: '$' + fmt(hoyGoogle.cpm, 2) },
@@ -1200,8 +1210,8 @@ function renderHero(A, B, days) {
         { k: 'CPL prom', v: '$' + fmt(googleCPL, 0) },
       ]
     },
-    { cls: 'owned', label: `Paid vs Propios · ${A.days}d`, value: paidRatio.toFixed(0), suffix: '%',
-      context: `Paid ${fmt(A.paidLeads)} · Propios ${fmt(A.ownedLeads)} · Propios traen ${(100 - paidRatio).toFixed(0)}%`,
+    { cls: 'owned', label: `Atrib. Paid vs Propios · ${A.days}d`, value: paidRatio.toFixed(0), suffix: '%',
+      context: `Atrib. Paid ${fmt(A.paidLeads)} · Propios ${fmt(A.ownedLeads)} · Propios representan ${(100 - paidRatio).toFixed(0)}%`,
       delta: delta(paidRatio, paidRatioB), deltaLabel: 'peso paid vs. período comparado',
       spark: last28.map(d => {
         const p = valueForDay(d, 'meta_leads_ga4') + valueForDay(d, 'google_leads_ga4');
@@ -1661,9 +1671,9 @@ function renderTrendStrip() {
   };
   const nfInt = new Intl.NumberFormat('es-EC', { maximumFractionDigits: 0 });
   const metrics = [
-    { label: 'Total leads paid', value: nfInt.format(A.paidLeads), delta: dRaw(A.paidLeads, B.paidLeads) },
-    { label: 'Meta leads', value: nfInt.format(A.metaLeads), delta: dRaw(A.metaLeads, B.metaLeads) },
-    { label: 'Google leads', value: nfInt.format(A.googleLeads), delta: dRaw(A.googleLeads, B.googleLeads) },
+    { label: 'Atribuciones paid', value: nfInt.format(A.paidLeads), delta: dRaw(A.paidLeads, B.paidLeads) },
+    { label: 'Meta atrib.', value: nfInt.format(A.metaLeads), delta: dRaw(A.metaLeads, B.metaLeads) },
+    { label: 'Google atrib.', value: nfInt.format(A.googleLeads), delta: dRaw(A.googleLeads, B.googleLeads) },
     { label: 'Gasto total', value: '$' + nfInt.format(A.totalSpend), delta: dRaw(A.totalSpend, B.totalSpend) },
     { label: 'CPL paid', value: '$' + A.cpl.toFixed(2), delta: dInv(A.cpl, B.cpl) },
   ];
@@ -1689,47 +1699,37 @@ if (_mo) _mo.classList.remove('visible');
 initFilters();
 applyPreset('all');
 
-// Update card LEADS THANK-YOU (GA4 source of truth) + estimado socios grayout (Cami)
+// Update card CIERRE GA4. The reconciled event total is the headline source of truth.
+// Daily source rows are channel-attributed sessions and can double-count a session.
 (function() {
-  var NO_SOCIOS_CAMI = 1633;
-  var META = 20000;
-  var FECHA_CIERRE = '2026-09-30';
+  var EVENTOS_RECONCILIADOS = 13646;
+  var SESIONES_UNICAS = 12760;
 
   if (!DATA.daily || !DATA.daily.length) return;
   var daily = DATA.daily.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
-  var eventosTotal = 0;
-  var eventosPorDia = [];
+  var atribucionesCanal = 0;
+  var metaAtrib = 0;
+  var googleAtrib = 0;
   for (var i = 0; i < daily.length; i++) {
     var ga4 = daily[i].ga4 || {};
-    var totalDia = 0;
-    for (var k in ga4) totalDia += (ga4[k] || 0);
-    eventosTotal += totalDia;
-    eventosPorDia.push({date: daily[i].date, total: totalDia});
+    for (var k in ga4) atribucionesCanal += (ga4[k] || 0);
+    metaAtrib += (ga4['Meta Paid'] || 0);
+    googleAtrib += (ga4['Google Paid'] || 0);
   }
-  var estimadoReal = eventosTotal - NO_SOCIOS_CAMI;
-  var pctAvance = Math.round(100 * eventosTotal / META);
-
-  // Proyección: usar bloque explícito DATA.proyeccion (no extrapolar promedios GA4)
-  var proyDef = DATA.proyeccion || null;
-  var diasRestantes = proyDef ? proyDef.dias_restantes : 17;
-  var leadsAdic = proyDef ? proyDef.leads_adicionales : 0;
-  var leadsDia = proyDef ? proyDef.leads_diarios : 0;
-  var eventosProyectados = eventosTotal + leadsAdic;
-  var pctProyeccion = Math.round(100 * eventosProyectados / META);
 
   var nfInt = new Intl.NumberFormat('es-EC', {maximumFractionDigits:0});
   var el = function(id) { return document.getElementById(id); };
-  if (el('cm-soc-val')) el('cm-soc-val').innerHTML = nfInt.format(eventosTotal);
+  if (el('cm-soc-val')) el('cm-soc-val').innerHTML = nfInt.format(EVENTOS_RECONCILIADOS);
   if (el('cm-soc-subnote')) el('cm-soc-subnote').textContent =
-      'estimado socios reales: ' + nfInt.format(estimadoReal) +
-      ' · restando ' + nfInt.format(NO_SOCIOS_CAMI) + ' no-socios (análisis Cami 11-sept)';
+      nfInt.format(SESIONES_UNICAS) + ' sesiones únicas con registro · sin cruce CRM final';
   if (el('cm-soc-ctx')) el('cm-soc-ctx').textContent =
-      pctAvance + '% de la meta · proyección al 30-sept ' + pctProyeccion + '% · CPL trabajo $' + (proyDef ? proyDef.cpl_trabajo.toFixed(2) : '9,50') + ' · +' + leadsAdic + ' leads paid proyectados';
-  if (el('cm-soc-fill')) el('cm-soc-fill').style.width = Math.min(pctAvance, 100) + '%';
-  if (el('cm-soc-conf')) el('cm-soc-conf').textContent = nfInt.format(eventosTotal);
-  if (el('cm-soc-adv')) el('cm-soc-adv').textContent = pctAvance + '%';
-  if (el('cm-soc-proj')) el('cm-soc-proj').textContent = nfInt.format(eventosProyectados);
-  if (el('cm-soc-pctclose')) el('cm-soc-pctclose').textContent = pctProyeccion + '%';
+      'Eventos COMPLETE_MCLAREN; no equivalen a socios TT MC validados';
+  if (el('cm-soc-conf')) el('cm-soc-conf').textContent = nfInt.format(EVENTOS_RECONCILIADOS);
+  if (el('cm-soc-meta')) el('cm-soc-meta').textContent = nfInt.format(SESIONES_UNICAS);
+  if (el('cm-soc-adv')) el('cm-soc-adv').textContent = nfInt.format(atribucionesCanal);
+  if (el('cm-soc-proj')) el('cm-soc-proj').textContent = nfInt.format(metaAtrib);
+  if (el('cm-soc-pctclose')) el('cm-soc-pctclose').textContent = nfInt.format(googleAtrib);
+  if (el('cm-soc-window')) el('cm-soc-window').textContent = '30-sept';
 })();
 
 // Update salud audiencias card
@@ -1780,25 +1780,26 @@ applyPreset('all');
 
 renderTrendStrip();
 
-// Update card INVERSIÓN CONSIDERACIÓN (dynamic from DATA.campaign_budget)
+// Update card POT PRINCIPAL (dynamic from DATA.campaign_budget)
 (function() {
   if (!DATA.campaign_budget) return;
   var cb = DATA.campaign_budget;
   var el = function(id) { return document.getElementById(id); };
   var nfMon = function(v) { return '$' + Math.round(v).toLocaleString('es-EC'); };
-  if (el('cm-inv-pct')) el('cm-inv-pct').innerHTML = cb.pct_ejecutado + '<span class="suffix">%</span>';
+  var pctTotal = Math.round(100 * cb.ejecutado_flow_total / cb.pot_total_flow);
+  if (el('cm-inv-pct')) el('cm-inv-pct').innerHTML = pctTotal + '<span class="suffix">%</span>';
   if (el('cm-inv-ctx')) el('cm-inv-ctx').textContent =
       nfMon(cb.ejecutado_flow_total) + ' ejecutado flow · ' +
-      nfMon(cb.consid_remanente_flow) + ' remanente flow · ' +
+      nfMon(cb.consid_remanente_flow) + ' remanente Consideración · ' +
       nfMon(cb.merch_reserva_flow) + ' Merch reservado';
-  if (el('cm-inv-fill')) el('cm-inv-fill').style.width = cb.pct_ejecutado + '%';
+  if (el('cm-inv-fill')) el('cm-inv-fill').style.width = pctTotal + '%';
   if (el('cm-inv-exec')) el('cm-inv-exec').textContent = nfMon(cb.ejecutado_flow_total);
   if (el('cm-inv-new')) el('cm-inv-new').textContent = nfMon(cb.consid_remanente_flow);
   if (el('cm-inv-daily')) el('cm-inv-daily').textContent = nfMon(cb.neto_plat_restante);
   if (el('cm-inv-days')) el('cm-inv-days').textContent = cb.dias_restantes;
   if (el('cm-inv-meta')) el('cm-inv-meta').textContent = nfMon(cb.meta_pacing_plat);
   if (el('cm-inv-google')) el('cm-inv-google').textContent = nfMon(cb.google_pacing_plat);
-  if (el('cm-soc-window')) el('cm-soc-window').textContent = cb.dias_restantes + ' días';
+  if (el('cm-soc-window')) el('cm-soc-window').textContent = '30-sept';
 })();
 
 
@@ -1931,7 +1932,7 @@ renderTrendStrip();
           else { const l = rows.reduce((a,r)=>a+src.leads(r), 0); const s = rows.reduce((a,r)=>a+src.spend(r), 0); t = l>0 ? s/l : null; }
         }
         if (t==null) totEl.textContent = '';
-        else if (displayMode==='leads') totEl.textContent = t.toLocaleString() + ' leads';
+        else if (displayMode==='leads') totEl.textContent = t.toLocaleString() + ' atrib.';
         else if (displayMode==='spend') totEl.textContent = fmtUSD(t) + ' total';
         else if (displayMode==='cpl') totEl.textContent = 'CPL avg ' + fmtUSD(t);
       }
@@ -1939,7 +1940,7 @@ renderTrendStrip();
     const modeLabel = document.getElementById('hm-mode-label');
     const scale = document.getElementById('hm-scale');
     if (mode==='leads') {
-      modeLabel.textContent = 'Leads por día';
+      modeLabel.textContent = 'Atribuciones por día';
       scale.innerHTML = [0.15,0.4,0.65,0.85,1].map(a=>`<span style="width:12px;height:12px;border-radius:2px;background:rgba(0,61,122,${a})"></span>`).join('');
     } else if (mode==='spend') {
       modeLabel.textContent = 'Gasto por día';
